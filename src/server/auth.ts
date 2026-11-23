@@ -195,19 +195,19 @@ export function safeReturnTo(value: string | null | undefined): string {
  */
 export async function beginLogin(returnTo: string, { silent = false } = {}): Promise<URL> {
   const env = requireEnv();
+  const jar = await cookies();
+  // Pauses the automatic check, so a visitor with no authentik session isn't sent round again on
+  // every page. Set first: if authentik can't be reached, the visitor still gets the page.
+  if (silent) jar.set(SSO_CHECKED_COOKIE, "1", cookieOptions(env, SSO_RECHECK_MINUTES * 60));
   const config = await getConfig(env);
   const verifier = oidc.randomPKCECodeVerifier();
   const state = oidc.randomState();
-  const jar = await cookies();
 
   jar.set(
     LOGIN_COOKIE,
     await seal({ verifier, state, returnTo: safeReturnTo(returnTo), silent }, "15m", env.secret),
     cookieOptions(env, 15 * 60),
   );
-  // Pauses the automatic check, so a visitor with no authentik session isn't sent round again on
-  // every page. A click on "Sign in" (not silent) always goes to authentik.
-  if (silent) jar.set(SSO_CHECKED_COOKIE, "1", cookieOptions(env, SSO_RECHECK_MINUTES * 60));
 
   return oidc.buildAuthorizationUrl(config, {
     redirect_uri: `${env.appUrl}/auth/callback`,
