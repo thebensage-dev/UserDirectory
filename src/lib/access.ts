@@ -1,7 +1,7 @@
 // What the signed-out visitor sees about editing. Shared by the server pages and the client UI.
 
 /** Who to ask for an account. A contact form comes later. */
-export const CONTACT_EMAIL = "creativebensonglasgow@gmail.com";
+export const CONTACT_EMAIL = "hello@thebensage.com";
 
 export const ACCESS_MAILTO = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(
   "User Directory access",
