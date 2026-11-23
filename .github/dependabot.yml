@@ -1,18 +1,12 @@
 # Weekly update PRs, at most a few a week: minor and patch updates arrive together in one PR per
 # ecosystem, and only majors come on their own.
 # @thebensage-dev packages come from GitHub Packages: package-lock.json names that registry for
-# them. Dependabot signs in there by itself with its GITHUB_TOKEN, which may read them because each
-# package's Manage Actions access lists this repo (Package settings), so no token is configured
-# here. The registry is declared only so Dependabot may reach it.
+# them, and Dependabot signs in there by itself with its own GITHUB_TOKEN, because each package's
+# Manage Actions access lists this repo (Package settings). So no registries entry or token here.
 version: 2
-registries:
-  github-packages:
-    type: npm-registry
-    url: https://npm.pkg.github.com
 updates:
   - package-ecosystem: npm
     directory: /
-    registries: [github-packages]
     schedule:
       interval: weekly
     # Skip releases younger than 3 days (most bad releases are pulled by then).
