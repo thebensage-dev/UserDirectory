@@ -1,0 +1,24 @@
+# Dependencies and build output
+/node_modules/
+/.next/
+/out/
+/build/
+/coverage/
+*.tsbuildinfo
+next-env.d.ts
+
+# Secrets: real values live in local .env files and in Coolify, never in git.
+.env
+.env.*
+!.env.example
+.npmrc
+*.pem
+*.key
+
+# Editors, OS and logs
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.log

@@ -1,0 +1,4 @@
+# Copy to .npmrc (gitignored) and replace the placeholder with a classic GitHub token that has
+# only the read:packages scope. npm reads .npmrc itself, so plain `npm install` works.
+@thebensage-dev:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=ghp_your_token

@@ -1,0 +1,29 @@
+/* Landing-page only. The shared motion classes (reveal, float, blob, typewriter…) come from
+   @thebensage-dev/ui; its reduced-motion rule turns these off too. */
+
+@layer components {
+  /* Rows of the animated search preview: the match lights up, the rest fade. */
+  .preview-row {
+    @apply flex items-center gap-3 rounded-xl px-3 py-2.5 transition;
+
+    &.is-match {
+      animation: match 600ms ease-out 2.1s forwards;
+    }
+    &:not(.is-match) {
+      animation: dim 600ms ease-out 2.1s forwards;
+    }
+  }
+}
+
+@keyframes match {
+  to {
+    /* The accent's highlighter yellow, like Highlight and the matching interest tags. */
+    background: var(--accent-soft);
+  }
+}
+
+@keyframes dim {
+  to {
+    opacity: 0.4;
+  }
+}

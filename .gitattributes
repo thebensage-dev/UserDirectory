@@ -1,0 +1,7 @@
+# Always use LF line endings, on every OS, so Prettier and diffs agree.
+* text=auto eol=lf
+
+# Binary files: never touch.
+*.ico binary
+*.png binary
+*.jpg binary

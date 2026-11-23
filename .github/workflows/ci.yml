@@ -1,0 +1,191 @@
+name: CI
+
+# One pipeline, run top to bottom. Every PR and every push to main runs job 1; pushes to main
+# (and manual runs) carry on through the rest:
+#   1. Check                   formatting, lint, types, tests and the Next.js build
+#   2. Build image             the User Directory's image, pushed to ghcr.io
+#   3. Check Coolify is ready  DOMAIN is set and Coolify answers; otherwise 4 is skipped
+#   4. Deploy to Coolify       after your approval (the "production" environment)
+# Until DOMAIN is set and Coolify answers, the deploy is skipped, so the run stays green.
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Only PR runs are cancelled by a newer push. Runs on main never queue behind each other, so a
+# deploy waiting for approval doesn't hold up the next push's check.
+concurrency:
+  group: ${{ github.event_name == 'pull_request' && format('pr-{0}', github.ref) || github.run_id }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  packages: read # install @thebensage-dev/ui from GitHub Packages
+
+jobs:
+  # 1. Check ----------------------------------------------------------------------------------
+  check:
+    # Keep this name: the "Protect main" ruleset requires a check called "Check".
+    name: Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v7
+      - name: Set up Node (version from .nvmrc)
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          registry-url: https://npm.pkg.github.com
+          scope: "@thebensage-dev"
+      # Needs the package's Manage Actions access to list this repo (see the README, "CI").
+      - name: Install dependencies
+        run: npm ci
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Check formatting
+        run: npm run format:check
+      - name: Lint
+        run: npm run lint
+      - name: Type-check
+        run: npm run typecheck
+      - name: Test
+        run: npm run test
+      - name: Build the site
+        run: npm run build
+
+  # 2. Build image ----------------------------------------------------------------------------
+  image:
+    name: Build image
+    needs: check
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image: ${{ steps.name.outputs.image }}
+      tag: sha-${{ github.sha }}
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v7
+      # ghcr.io refuses capitals in the owner.
+      - name: Work out the image name
+        id: name
+        run: echo "image=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/user-directory" >> "$GITHUB_OUTPUT"
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+      - name: Sign in to ghcr.io
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push the image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ steps.name.outputs.image }}:sha-${{ github.sha }}
+            ${{ steps.name.outputs.image }}:main
+          # No attestation manifests, so each push is one package version and the clean-up
+          # below can't delete part of an image.
+          provenance: false
+          sbom: false
+          # Links the package to this repo, so the repo's workflows can push to it.
+          labels: org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          # npm ci in the Dockerfile reads @thebensage-dev/ui with this, as a BuildKit secret.
+          secrets: |
+            NODE_AUTH_TOKEN=${{ secrets.GITHUB_TOKEN }}
+      - name: Keep only the 10 newest images
+        uses: actions/delete-package-versions@v5
+        with:
+          package-name: user-directory
+          package-type: container
+          min-versions-to-keep: 10
+
+  # 3. Check Coolify is ready -----------------------------------------------------------------
+  # The same gate in every repo. Deploys need DOMAIN and a Coolify that answers at
+  # coolify.<DOMAIN> (or COOLIFY_URL). Without them the deploy job is skipped instead of failing,
+  # so pushes before go-live stay green and don't ask for an approval.
+  ready:
+    name: Check Coolify is ready
+    needs: check
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      deploy: ${{ steps.coolify.outputs.deploy }}
+    steps:
+      - name: Ask Coolify whether it's up
+        id: coolify
+        env:
+          DOMAIN: ${{ vars.DOMAIN }}
+          COOLIFY_URL: ${{ vars.COOLIFY_URL }}
+        run: |
+          if [ -z "$DOMAIN" ] && [ -z "$COOLIFY_URL" ]; then
+            echo "::notice::Deploy skipped: the DOMAIN variable isn't set yet."
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          url=${COOLIFY_URL:-https://coolify.$DOMAIN}
+          if curl --silent --fail --max-time 15 "${url%/}/api/health" >/dev/null; then
+            echo "deploy=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::Deploy skipped: Coolify didn't answer at $url. Fine before go-live; after it, check Coolify is up."
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  # 4. Deploy to Coolify ----------------------------------------------------------------------
+  # Waits for your approval (the "production" environment's required reviewer).
+  deploy:
+    name: Deploy to Coolify
+    needs: [image, ready]
+    if: needs.ready.outputs.deploy == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: production
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+    env:
+      DOMAIN: ${{ vars.DOMAIN }}
+      COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
+      # Optional overrides.
+      COOLIFY_URL: ${{ vars.COOLIFY_URL }}
+      APP_UUID: ${{ vars.COOLIFY_APP_UUID }}
+      APP_NAME: user-directory
+      IMAGE: ${{ needs.image.outputs.image }}
+      TAG: ${{ needs.image.outputs.tag }}
+      # derive:<label> values become HMAC-SHA256(PLATFORM_SECRET, label) in the deploy step. The
+      # client secret's label matches Infrastructure's, so authentik and this app always agree.
+      PLATFORM_SECRET: ${{ secrets.PLATFORM_SECRET }}
+      # The app's runtime settings: every APP_ENV_<NAME> becomes <NAME> in Coolify.
+      APP_ENV_APP_URL: https://users.${{ vars.DOMAIN }}
+      APP_ENV_MAIN_SITE_URL: https://${{ vars.DOMAIN }}
+      APP_ENV_OIDC_ISSUER_URL: https://id.${{ vars.DOMAIN }}/application/o/user-directory/
+      APP_ENV_OIDC_CLIENT_ID: user-directory
+      APP_ENV_OIDC_CLIENT_SECRET: derive:user-directory-oidc
+      APP_ENV_AUTH_SECRET: derive:user-directory-session
+      # The People API (the Api repo), which holds the data.
+      APP_ENV_API_URL: https://api.${{ vars.DOMAIN }}
+    steps:
+      - name: Check the deploy secrets are set
+        id: secrets
+        run: |
+          if [ -z "$COOLIFY_TOKEN" ]; then
+            echo "::warning::Deploy skipped: add the COOLIFY_TOKEN secret to the production environment."
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          fi
+      # The shared deploy step, kept once in the Infrastructure repo.
+      - name: Deploy to Coolify
+        if: steps.secrets.outputs.ok == 'true'
+        uses: thebensage-dev/Infrastructure/.github/actions/coolify-deploy@main

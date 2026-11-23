@@ -1,0 +1,7 @@
+@import "tailwindcss";
+
+/* Shared tokens, base styles and component classes. */
+@import "@thebensage-dev/ui/styles.css";
+
+/* App-only styles. */
+@import "../styles/landing.css";

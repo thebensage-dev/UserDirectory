@@ -1,0 +1,49 @@
+# Weekly update PRs, at most a few a week: minor and patch updates arrive together in one PR per
+# ecosystem, and only majors come on their own.
+# @thebensage-dev/ui comes from GitHub Packages: Dependabot reads it with the same grant as Actions
+# (the package's Manage Actions access lists this repo), so no token is needed here.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    # Skip releases younger than 3 days (most bad releases are pulled by then).
+    cooldown:
+      default-days: 3
+    open-pull-requests-limit: 5
+    ignore:
+      # Deliberate pins, the same in all three Node repos: typescript-eslint supports only
+      # TypeScript < 6.1, and eslint-config-next's plugins only ESLint 9. Lift when that changes.
+      - dependency-name: typescript
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: eslint
+        update-types: ["version-update:semver-major"]
+      # Node's types follow .nvmrc (Node 26 LTS); move them with the next LTS.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
+    groups:
+      react:
+        patterns: ["react", "react-dom", "@types/react", "@types/react-dom"]
+      next:
+        patterns: ["next", "eslint-config-next"]
+      minor-and-patch:
+        update-types: [minor, patch]
+
+  # The FROM lines in the Dockerfile.
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+    ignore:
+      # Node 26 is the LTS; odd majors are never LTS. Move with .nvmrc, by hand.
+      - dependency-name: node
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ["*"]

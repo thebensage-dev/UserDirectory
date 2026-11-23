@@ -1,0 +1,27 @@
+# Rebuilt inside the image
+node_modules
+.next
+out
+coverage
+*.tsbuildinfo
+next-env.d.ts
+
+# Secrets: never sent to the Docker build. The Dockerfile writes its own .npmrc.
+.env
+.env.*
+!.env.example
+.npmrc
+.npmrc.example
+*.pem
+*.key
+
+# Not needed to build or run
+.git
+.github
+.idea
+.vscode
+__tests__
+*.md
+*.log
+Dockerfile
+.dockerignore
