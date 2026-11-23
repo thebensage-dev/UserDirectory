@@ -8,6 +8,7 @@ import {
   colourAttrs,
   COLOURS_COOKIE,
   CookieNotice,
+  MobileMenu,
   Logo,
   preferenceCookieDomain,
   readColours,
@@ -17,7 +18,7 @@ import {
   themeClass,
 } from "@thebensage-dev/ui";
 import { NavLink } from "@thebensage-dev/ui/next";
-import { LogIn, LogOut, UserCog } from "lucide-react";
+import { LogIn, LogOut, UserCog, Users } from "lucide-react";
 import { fontVariables } from "@/app/fonts";
 import SiteFooter from "@/components/layout/SiteFooter";
 import { mainSiteUrl } from "@/lib/mainSite";
@@ -54,10 +55,47 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <header className="sticky top-0 z-10 border-b border-border bg-surface/80 backdrop-blur">
             <div className="mx-auto flex h-14 w-full max-w-5xl items-center justify-between px-4 sm:px-6">
               <Link href="/" className="rounded-md">
-                <Logo name={<span className="sr-only sm:not-sr-only">User Directory</span>} />
+                <Logo name="User Directory" />
               </Link>
-              {/* Tight on phones: icon-only Sign in and smaller gaps, so the theme toggle still fits. */}
-              <nav className="flex items-center gap-1 sm:gap-2">
+              {/* Phones: one menu button with the same links and controls (nothing scrolls sideways). */}
+              <MobileMenu label="Menu">
+                <Link href="/users" className="mobile-menu-link">
+                  <Users aria-hidden />
+                  Directory
+                </Link>
+                <hr className="mobile-menu-divider" />
+                <div className="mobile-menu-row">
+                  Theme
+                  <ThemeToggle
+                    initialTheme={theme}
+                    cookieDomain={preferenceCookieDomain(mainSite)}
+                  />
+                </div>
+                {user ? (
+                  <>
+                    {account && (
+                      <a href={account} className="mobile-menu-link">
+                        <UserCog aria-hidden />
+                        <span className="truncate">{user.name}</span>
+                      </a>
+                    )}
+                    <form action="/auth/logout" method="post">
+                      <button type="submit" className="mobile-menu-link w-full">
+                        <LogOut aria-hidden />
+                        Sign out
+                      </button>
+                    </form>
+                  </>
+                ) : (
+                  authConfigured() && (
+                    <a href={signInHref("/users")} className="mobile-menu-link">
+                      <LogIn aria-hidden />
+                      Sign in
+                    </a>
+                  )
+                )}
+              </MobileMenu>
+              <nav className="hidden items-center gap-2 sm:flex">
                 <NavLink href="/users">Directory</NavLink>
                 {user ? (
                   <form action="/auth/logout" method="post" className="flex items-center gap-2">
