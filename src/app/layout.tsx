@@ -56,7 +56,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <Link href="/" className="rounded-md">
                 <Logo name={<span className="sr-only sm:not-sr-only">User Directory</span>} />
               </Link>
-              <nav className="flex items-center gap-2">
+              {/* Tight on phones: icon-only Sign in and smaller gaps, so the theme toggle still fits. */}
+              <nav className="flex items-center gap-1 sm:gap-2">
                 <NavLink href="/users">Directory</NavLink>
                 {user ? (
                   <form action="/auth/logout" method="post" className="flex items-center gap-2">
@@ -86,9 +87,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                   </form>
                 ) : (
                   authConfigured() && (
-                    <a href={signInHref("/users")} className="btn btn-secondary">
-                      <LogIn className="size-4" />
-                      Sign in
+                    <a
+                      href={signInHref("/users")}
+                      className="btn btn-secondary"
+                      aria-label="Sign in"
+                      title="Sign in"
+                    >
+                      <LogIn className="size-4" aria-hidden />
+                      <span className="hidden sm:inline">Sign in</span>
                     </a>
                   )
                 )}
