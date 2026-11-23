@@ -31,6 +31,8 @@ export const metadata: Metadata = {
   description:
     "A searchable people directory built with Next.js and React, on a .NET API with PostgreSQL.",
   icons: { icon: { url: "/icon.svg", type: "image/svg+xml" } },
+  // Kept out of search results (also sent as X-Robots-Tag, see next.config.ts).
+  robots: { index: false, follow: false },
 };
 
 const toastColours = {

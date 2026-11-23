@@ -22,7 +22,12 @@ const nextConfig: NextConfig = {
   async headers() {
     // Every page except the front-channel logout route, which authentik loads in a frame
     // (it sets its own frame-ancestors).
-    return [{ source: "/((?!auth/frontchannel-logout).*)", headers: securityHeaders }];
+    return [
+      { source: "/((?!auth/frontchannel-logout).*)", headers: securityHeaders },
+      // A demo with sample people: keep every page out of search results. Crawling stays allowed
+      // (no robots.txt block), so search engines can see this header.
+      { source: "/:path*", headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] },
+    ];
   },
 };
 
