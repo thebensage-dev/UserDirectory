@@ -102,9 +102,9 @@ scripts/                  docker-build.mjs
 
 These generic pieces come from `@thebensage-dev/ui`:
 
-- Components: `Modal`, `ConfirmDialog`, `Pagination`, `SearchBox`, `SegmentedControl`, `ThemeToggle`, `Avatar`, `Highlight`, `EmptyState`, `Reveal`, `Footer` and `CookieNotice`.
+- Components: `SiteHeader`, `SectionHeading`, `FeatureGrid`, `StepTimeline`, `Modal`, `ConfirmDialog`, `Pagination`, `SearchBox`, `SegmentedControl`, `ThemeToggle`, `Avatar`, `Highlight`, `EmptyState`, `Reveal`, `Footer` and `CookieNotice`.
 - `logoSvg()`, for the favicon.
-- `NavLink`, from `@thebensage-dev/ui/next`.
+- `PathLink` (the header's link, marking the current page), from `@thebensage-dev/ui/next`.
 - The `useShortcut` hook, plus the text and theme helpers.
 - All tokens and component classes.
 

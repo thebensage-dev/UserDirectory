@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
-import Link from "next/link";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Toaster } from "sonner";
 import clsx from "clsx";
@@ -8,17 +7,15 @@ import {
   colourAttrs,
   COLOURS_COOKIE,
   CookieNotice,
-  MobileMenu,
-  Logo,
   preferenceCookieDomain,
   readColours,
   readTheme,
   THEME_COOKIE,
-  ThemeToggle,
+  SiteHeader,
   themeClass,
 } from "@thebensage-dev/ui";
-import { NavLink } from "@thebensage-dev/ui/next";
-import { LogIn, LogOut, UserCog, Users } from "lucide-react";
+import { PathLink } from "@thebensage-dev/ui/next";
+import { Users } from "lucide-react";
 import { fontVariables } from "@/app/fonts";
 import SiteFooter from "@/components/layout/SiteFooter";
 import { mainSiteUrl } from "@/lib/mainSite";
@@ -54,94 +51,18 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang="en" className={clsx(fontVariables, themeClass(theme))} {...colourAttrs(colours)}>
       <body className="flex min-h-screen flex-col">
         <NuqsAdapter>
-          <header className="sticky top-0 z-10 border-b border-border bg-surface/80 backdrop-blur">
-            <div className="mx-auto flex h-14 w-full max-w-5xl items-center justify-between px-4 sm:px-6">
-              <Link href="/" className="rounded-md">
-                <Logo name="User Directory" />
-              </Link>
-              {/* Phones: one menu button with the same links and controls (nothing scrolls sideways). */}
-              <MobileMenu label="Menu">
-                <Link href="/users" className="mobile-menu-link">
-                  <Users aria-hidden />
-                  Directory
-                </Link>
-                <hr className="mobile-menu-divider" />
-                <div className="mobile-menu-row">
-                  Theme
-                  <ThemeToggle
-                    initialTheme={theme}
-                    cookieDomain={preferenceCookieDomain(mainSite)}
-                  />
-                </div>
-                {user ? (
-                  <>
-                    {account && (
-                      <a href={account} className="mobile-menu-link">
-                        <UserCog aria-hidden />
-                        <span className="truncate">{user.name}</span>
-                      </a>
-                    )}
-                    <form action="/auth/logout" method="post">
-                      <button type="submit" className="mobile-menu-link w-full">
-                        <LogOut aria-hidden />
-                        Sign out
-                      </button>
-                    </form>
-                  </>
-                ) : (
-                  authConfigured() && (
-                    <a href={signInHref("/users")} className="mobile-menu-link">
-                      <LogIn aria-hidden />
-                      Sign in
-                    </a>
-                  )
-                )}
-              </MobileMenu>
-              <nav className="hidden items-center gap-2 sm:flex">
-                <NavLink href="/users">Directory</NavLink>
-                {user ? (
-                  <form action="/auth/logout" method="post" className="flex items-center gap-2">
-                    {account ? (
-                      <a
-                        href={account}
-                        className="flex items-center gap-1.5 rounded-md text-sm text-foreground-muted transition hover:text-foreground"
-                        title="Your account: name, email and password"
-                      >
-                        <UserCog className="size-4" aria-hidden />
-                        <span className="hidden max-w-40 truncate sm:inline">{user.name}</span>
-                        <span className="sr-only sm:hidden">Your account</span>
-                      </a>
-                    ) : (
-                      <span className="hidden max-w-40 truncate text-sm text-foreground-muted sm:inline">
-                        {user.name}
-                      </span>
-                    )}
-                    <button
-                      type="submit"
-                      className="icon-btn"
-                      title="Sign out"
-                      aria-label="Sign out"
-                    >
-                      <LogOut className="size-4" />
-                    </button>
-                  </form>
-                ) : (
-                  authConfigured() && (
-                    <a
-                      href={signInHref("/users")}
-                      className="btn btn-secondary"
-                      aria-label="Sign in"
-                      title="Sign in"
-                    >
-                      <LogIn className="size-4" aria-hidden />
-                      <span className="hidden sm:inline">Sign in</span>
-                    </a>
-                  )
-                )}
-                <ThemeToggle initialTheme={theme} cookieDomain={preferenceCookieDomain(mainSite)} />
-              </nav>
-            </div>
-          </header>
+          <SiteHeader
+            brand={{ name: "User Directory", href: "/" }}
+            nav={[{ label: "Directory", href: "/users", icon: Users }]}
+            theme={theme}
+            cookieDomain={preferenceCookieDomain(mainSite)}
+            user={user}
+            accountHref={account}
+            signInHref={authConfigured() ? signInHref("/users") : undefined}
+            labels={{ account: "Your account: name, email and password" }}
+            linkComponent={PathLink}
+            sticky
+          />
           <div className="flex-1">{children}</div>
           <SiteFooter />
         </NuqsAdapter>

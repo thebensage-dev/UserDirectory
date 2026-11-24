@@ -19,7 +19,7 @@
   "dependencies": {
     "@hookform/resolvers": "^7.0.8",
     "@thebensage-dev/api-client": "^0.1.0",
-    "@thebensage-dev/ui": "^1.1.0",
+    "@thebensage-dev/ui": "^1.2.0",
     "clsx": "^2.1.1",
     "jose": "^6.2.18",
     "lucide-react": "^1.77.0",

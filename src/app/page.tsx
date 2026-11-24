@@ -3,63 +3,78 @@ import {
   Database,
   Filter,
   Link2,
-  type LucideIcon,
   MoonStar,
   Search,
   ShieldCheck,
   Zap,
 } from "lucide-react";
-import clsx from "clsx";
 import Link from "next/link";
-import { BrandBlobs, Reveal, toneAt, toneClass } from "@thebensage-dev/ui";
+import {
+  BrandBlobs,
+  FeatureGrid,
+  Reveal,
+  SectionHeading,
+  StepTimeline,
+  type Feature,
+  type TimelineStep,
+} from "@thebensage-dev/ui";
 import SearchPreview from "@/components/landing/SearchPreview";
 import { getDirectorySummary } from "@/server/users";
 
-const FEATURES: { icon: LucideIcon; title: string; text: string }[] = [
+const FEATURES: Feature[] = [
   {
     icon: Search,
     title: "Flexible search",
-    text: "Multi-word, accent-insensitive search across names, jobs, cities and interests, ranked by best match.",
+    description:
+      "Multi-word, accent-insensitive search across names, jobs, cities and interests, ranked by best match.",
   },
   {
     icon: Filter,
     title: "Combined filters",
-    text: "Filter by country, age range and interests, with removable chips and live counts.",
+    description:
+      "Filter by country, age range and interests, with removable chips and live counts.",
   },
   {
     icon: Link2,
     title: "Shareable views",
-    text: "Search, filters, sort and page all live in the URL, so any view can be bookmarked or shared.",
+    description:
+      "Search, filters, sort and page all live in the URL, so any view can be bookmarked or shared.",
   },
   {
     icon: ShieldCheck,
     title: "Shared validation",
-    text: "One schema checks the form as you type and again on the server, with errors beside each field.",
+    description:
+      "One schema checks the form as you type and again on the server, with errors beside each field.",
   },
   {
     icon: Zap,
     title: "Server-rendered",
-    text: "Pages arrive fully rendered from the People API, and changes update the page without a reload.",
+    description:
+      "Pages arrive fully rendered from the People API, and changes update the page without a reload.",
   },
   {
     icon: MoonStar,
     title: "Light and dark themes",
-    text: "Follows the system setting or your choice, applied on the server so there is no flash.",
+    description:
+      "Follows the system setting or your choice, applied on the server so there is no flash.",
   },
 ];
 
-const STEPS = [
+const STEPS: TimelineStep[] = [
   {
     title: "Server Components read the data",
-    text: "Pages call the People API, a .NET service on PostgreSQL, and stream ready-made HTML.",
+    description:
+      "Pages call the People API, a .NET service on PostgreSQL, and stream ready-made HTML.",
   },
   {
     title: "The URL drives the list",
-    text: "nuqs keeps search and filters in the address bar; the API searches and pages in SQL.",
+    description:
+      "nuqs keeps search and filters in the address bar; the API searches and pages in SQL.",
   },
   {
     title: "Server Actions make the changes",
-    text: "Validated actions send your signed-in token to the API, then revalidate the page.",
+    description:
+      "Validated actions send your signed-in token to the API, then revalidate the page.",
   },
 ];
 
@@ -126,50 +141,25 @@ export default async function HomePage() {
         </Reveal>
       </section>
 
-      <section className="relative mx-auto w-full max-w-5xl px-4 py-16 sm:px-6">
+      <section
+        aria-labelledby="features-title"
+        className="relative mx-auto w-full max-w-5xl px-4 py-16 sm:px-6"
+      >
         <Reveal onScroll>
-          <h2 className="text-2xl font-semibold tracking-tight">Features</h2>
+          <SectionHeading id="features-title" title="Features" />
         </Reveal>
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {FEATURES.map(({ icon: Icon, title, text }, i) => (
-            <Reveal
-              key={title}
-              delay={i * 80}
-              onScroll
-              className={clsx("card p-5", toneClass(toneAt(i)))}
-            >
-              <span className="icon-tile">
-                <Icon />
-              </span>
-              <h3 className="mt-4 font-semibold">{title}</h3>
-              <p className="mt-1 text-sm text-foreground-muted">{text}</p>
-            </Reveal>
-          ))}
-        </div>
+        <FeatureGrid features={FEATURES} className="mt-8" />
       </section>
 
       <section
         id="how"
+        aria-labelledby="how-title"
         className="relative mx-auto w-full max-w-5xl scroll-mt-20 px-4 py-16 sm:px-6"
       >
         <Reveal onScroll>
-          <h2 className="text-2xl font-semibold tracking-tight">How it works</h2>
+          <SectionHeading id="how-title" title="How it works" />
         </Reveal>
-        <ol className="mt-8 grid gap-4 lg:grid-cols-3">
-          {STEPS.map((step, i) => (
-            <Reveal
-              as="li"
-              key={step.title}
-              delay={i * 100}
-              onScroll
-              className={clsx("card tone-card p-5", toneClass(toneAt(i)))}
-            >
-              <span className="icon-tile size-8 rounded-full text-sm font-semibold">{i + 1}</span>
-              <h3 className="mt-4 font-semibold">{step.title}</h3>
-              <p className="mt-1 text-sm text-foreground-muted">{step.text}</p>
-            </Reveal>
-          ))}
-        </ol>
+        <StepTimeline steps={STEPS} label="How it works" countLabel={false} className="mt-8" />
         <Reveal onScroll className="mt-8 flex flex-wrap gap-2">
           {STACK.map((item) => (
             <span key={item} className="tag border border-border bg-surface px-3 py-1">
