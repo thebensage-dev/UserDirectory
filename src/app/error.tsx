@@ -5,7 +5,7 @@ import { EmptyState } from "@thebensage-dev/ui";
 
 export default function Error({ reset }: { error: Error; reset: () => void }) {
   return (
-    <main className="mx-auto w-full max-w-3xl px-4 py-16 sm:px-6">
+    <main className="mx-auto w-full max-w-3xl px-4 py-section sm:px-6">
       <EmptyState
         icon={CircleAlert}
         title="Something went wrong"

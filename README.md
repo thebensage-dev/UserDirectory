@@ -43,7 +43,7 @@ All five are sibling folders under `Documents\GitHub`.
 ## Prerequisites
 
 - **Node 26** (`.nvmrc`, so `nvm use 26`).
-- **A GitHub Packages token**: `@thebensage-dev/ui` is on GitHub Packages, which needs a token to install even a public package. Create a classic personal access token with only the `read:packages` scope, copy `.npmrc.example` to `.npmrc` and replace the placeholder with it. `.npmrc` is gitignored, and npm reads it itself, so plain `npm install` and `npm ci` just work.
+- **A GitHub Packages token**: `@thebensage-dev/ui` and `@thebensage-dev/api-client` are on GitHub Packages, which needs a token to install even a public package. Create a classic personal access token with only the `read:packages` scope, copy `.npmrc.example` to `.npmrc` and replace the placeholder with it. `.npmrc` is gitignored, and npm reads it itself, so plain `npm install` and `npm ci` just work.
 
 ## Getting started
 
@@ -131,7 +131,7 @@ One workflow, `.github/workflows/ci.yml` ("CI"), with the same shape as the othe
 
 | Job                        | Runs on                    | What it does                                                                                                                                                              |
 | -------------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Check**                  | every PR and push          | `npm ci` (installs `@thebensage-dev/ui` with the workflow's own `GITHUB_TOKEN`), then formatting, lint, type-check, tests and `npm run build`.                            |
+| **Check**                  | every PR and push          | `npm ci` (installs the `@thebensage-dev` packages with the workflow's own `GITHUB_TOKEN`), then formatting, lint, type-check, tests and `npm run build`.                  |
 | **Build image**            | push to `main`, manual run | Builds the Dockerfile and pushes `ghcr.io/thebensage-dev/user-directory:sha-<commit>` (and `:main`), and keeps the 10 newest.                                             |
 | **Check Coolify is ready** | push to `main`, manual run | Runs next to **Build image**, the same in every repo: is `DOMAIN` set and does `https://coolify.<DOMAIN>/api/health` answer? If not, the deploy is skipped with a notice. |
 | **Deploy to Coolify**      | after your approval        | Only when Coolify is ready: sends the image tag and the app's settings to Coolify through Infrastructure's shared deploy step, and waits for the result.                  |
@@ -166,7 +166,7 @@ Without the OIDC variables (see `.env.example`) the directory is read-only and t
 Deploys go through this repo's pipeline (`.github/workflows/ci.yml`), never through Coolify's own auto-deploy. On every push to `main` (or Actions > CI > **Run workflow**):
 
 1. **check** runs the checks and the build.
-2. **image** builds the production image from that commit and pushes it to GitHub's container registry as `ghcr.io/thebensage-dev/user-directory:sha-<commit>` (and `:main`). The build gets `@thebensage-dev/ui` with the job's own `GITHUB_TOKEN`.
+2. **image** builds the production image from that commit and pushes it to GitHub's container registry as `ghcr.io/thebensage-dev/user-directory:sha-<commit>` (and `:main`). The build gets the `@thebensage-dev` packages with the job's own `GITHUB_TOKEN`.
 3. **deploy** waits for your approval, then Infrastructure's shared deploy action (`thebensage-dev/Infrastructure/.github/actions/coolify-deploy`) writes the app's runtime settings into Coolify from this repo's GitHub secrets and variables, points the app at the new image tag, starts the deployment and waits until Coolify reports it finished.
 
 Coolify only runs images; it builds nothing and holds no tokens of its own. The **image** job keeps the 10 newest images on ghcr.io (about 10 deploys to roll back to) and deletes older ones, and Coolify's own Docker cleanup (Servers > the server > Docker Cleanup) removes images the server no longer uses.

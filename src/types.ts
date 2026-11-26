@@ -1,28 +1,10 @@
-export type User = {
-  id: number;
-  fullName: string;
-  email: string;
-  phone: string | null;
-  age: number;
-  country: string;
-  city: string | null;
-  jobTitle: string | null;
-  bio: string | null;
-  interests: string[];
-  createdAt: string;
-  updatedAt: string;
-};
+import type { Person, PersonPage } from "@thebensage-dev/api-client";
 
-export type UserPage = {
-  items: User[];
-  total: number;
-  page: number;
-  pageCount: number;
-  from: number;
-  to: number;
-  terms: string[];
-};
+// People and pages come straight from the People API's generated types (@thebensage-dev/api-client).
+export type User = Person;
+export type UserPage = PersonPage;
 
+/** The API's summary, reshaped for the filter menu and stats: [code or name, people] pairs. */
 export type DirectorySummary = {
   people: number;
   averageAge: number;

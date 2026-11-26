@@ -5,8 +5,8 @@
   "license": "MIT",
   "scripts": {
     "docker:build": "node scripts/docker-build.mjs",
-    "dev": "next dev --webpack --port 3000",
-    "build": "next build --webpack",
+    "dev": "next dev --port 3000",
+    "build": "next build",
     "start": "next start --port 3000",
     "lint": "eslint --max-warnings=0",
     "typecheck": "tsc --noEmit",
@@ -19,7 +19,7 @@
   "dependencies": {
     "@hookform/resolvers": "^7.0.8",
     "@thebensage-dev/api-client": "^0.1.0",
-    "@thebensage-dev/ui": "^1.2.0",
+    "@thebensage-dev/ui": "^1.3.1",
     "clsx": "^2.1.1",
     "jose": "^6.2.18",
     "lucide-react": "^1.77.0",

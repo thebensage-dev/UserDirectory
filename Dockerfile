@@ -6,8 +6,9 @@
 FROM node:26-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
-# @thebensage-dev/ui comes from GitHub Packages. The token is a BuildKit secret, so it never lands in a
-# layer. The temporary .npmrc only names the variable; npm reads its value from the secret.
+# @thebensage-dev/ui and @thebensage-dev/api-client come from GitHub Packages. The token is a
+# BuildKit secret, so it never lands in a layer. The temporary .npmrc only names the variable; npm
+# reads its value from the secret.
 RUN --mount=type=secret,id=NODE_AUTH_TOKEN,env=NODE_AUTH_TOKEN \
     printf '%s\n' '@thebensage-dev:registry=https://npm.pkg.github.com' \
       '//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}' > .npmrc \

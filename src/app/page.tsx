@@ -96,7 +96,7 @@ export default async function HomePage() {
     <main className="relative overflow-hidden">
       <div aria-hidden className="dot-grid absolute inset-x-0 top-0 h-[36rem]" />
 
-      <section className="relative isolate mx-auto grid w-full max-w-5xl items-center gap-12 px-4 pt-16 pb-20 sm:px-6 sm:pt-24 lg:grid-cols-[1.1fr_1fr]">
+      <section className="relative isolate mx-auto grid w-full max-w-5xl items-center gap-stack px-4 pt-16 pb-section sm:px-6 sm:pt-24 lg:grid-cols-[1.1fr_1fr]">
         <BrandBlobs />
         <div>
           <Reveal>
@@ -106,7 +106,7 @@ export default async function HomePage() {
             </span>
           </Reveal>
           <Reveal delay={100}>
-            <h1 className="mt-5 text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
+            <h1 className="title-display mt-5">
               A fast, <span className="gradient-text">searchable</span> people directory
             </h1>
           </Reveal>
@@ -116,7 +116,7 @@ export default async function HomePage() {
               .NET API on PostgreSQL, with every change validated in the browser and on the server.
             </p>
           </Reveal>
-          <Reveal delay={300} className="mt-8 flex flex-wrap gap-3">
+          <Reveal delay={300} className="mt-content flex flex-wrap gap-3">
             <Link href="/users" className="btn btn-primary group h-11 px-5">
               Open the directory
               <ArrowRight className="size-4 transition group-hover:translate-x-0.5" />
@@ -143,24 +143,29 @@ export default async function HomePage() {
 
       <section
         aria-labelledby="features-title"
-        className="relative mx-auto w-full max-w-5xl px-4 py-16 sm:px-6"
+        className="relative mx-auto w-full max-w-5xl px-4 pb-section sm:px-6"
       >
         <Reveal onScroll>
           <SectionHeading id="features-title" title="Features" />
         </Reveal>
-        <FeatureGrid features={FEATURES} className="mt-8" />
+        <FeatureGrid features={FEATURES} className="mt-content" />
       </section>
 
       <section
         id="how"
         aria-labelledby="how-title"
-        className="relative mx-auto w-full max-w-5xl scroll-mt-20 px-4 py-16 sm:px-6"
+        className="relative mx-auto w-full max-w-5xl scroll-mt-20 px-4 pb-section sm:px-6"
       >
         <Reveal onScroll>
           <SectionHeading id="how-title" title="How it works" />
         </Reveal>
-        <StepTimeline steps={STEPS} label="How it works" countLabel={false} className="mt-8" />
-        <Reveal onScroll className="mt-8 flex flex-wrap gap-2">
+        <StepTimeline
+          steps={STEPS}
+          label="How it works"
+          countLabel={false}
+          className="mt-content"
+        />
+        <Reveal onScroll className="mt-stack flex flex-wrap gap-2">
           {STACK.map((item) => (
             <span key={item} className="tag border border-border bg-surface px-3 py-1">
               {item}
@@ -169,14 +174,14 @@ export default async function HomePage() {
         </Reveal>
       </section>
 
-      <section className="relative mx-auto w-full max-w-5xl px-4 pt-8 pb-24 sm:px-6">
+      <section className="relative mx-auto w-full max-w-5xl px-4 pb-section sm:px-6">
         <Reveal
           onScroll
           className="card brand-wash flex flex-col items-start gap-4 p-8 sm:flex-row sm:items-center sm:justify-between"
         >
           <div>
             <span aria-hidden className="brand-rule mb-4" />
-            <h2 className="text-xl font-semibold tracking-tight">Explore the directory</h2>
+            <h2 className="title-card text-xl">Explore the directory</h2>
             <p className="mt-1 text-foreground-muted">
               Search, filter, or sign in to add and edit records.
             </p>

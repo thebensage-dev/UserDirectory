@@ -21,7 +21,7 @@ concurrency:
 
 permissions:
   contents: read
-  packages: read # install @thebensage-dev/ui from GitHub Packages
+  packages: read # install @thebensage-dev/ui and api-client from GitHub Packages
 
 jobs:
   # 1. Check ----------------------------------------------------------------------------------
@@ -100,7 +100,7 @@ jobs:
           labels: org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          # npm ci in the Dockerfile reads @thebensage-dev/ui with this, as a BuildKit secret.
+          # npm ci in the Dockerfile reads the @thebensage-dev packages with this, as a BuildKit secret.
           secrets: |
             NODE_AUTH_TOKEN=${{ secrets.GITHUB_TOKEN }}
       - name: Keep only the 10 newest images

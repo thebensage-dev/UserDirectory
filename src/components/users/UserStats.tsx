@@ -13,7 +13,7 @@ export default function UserStats({ summary }: { summary: DirectorySummary }) {
   ];
 
   return (
-    <dl className="mt-8 grid grid-cols-2 gap-3 lg:grid-cols-4">
+    <dl className="mt-content grid grid-cols-2 gap-3 lg:grid-cols-4">
       {stats.map((s, i) => (
         <div key={s.label} className={clsx("card tone-card px-4 pt-4 pb-3", toneClass(toneAt(i)))}>
           <dt className="eyebrow">{s.label}</dt>

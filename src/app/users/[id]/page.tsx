@@ -29,7 +29,7 @@ export default async function UserPage(props: Props) {
   const access = await pageAccess();
 
   return (
-    <main className="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6 sm:py-12">
+    <main className="mx-auto w-full max-w-3xl px-4 pt-8 pb-section sm:px-6">
       <Link
         href="/users"
         className="inline-flex items-center gap-1 rounded-md text-sm font-medium text-foreground-muted transition hover:text-foreground"
@@ -53,7 +53,7 @@ export default async function UserPage(props: Props) {
 
           <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0">
-              <h1 className="text-2xl font-semibold tracking-tight">{user.fullName}</h1>
+              <h1 className="title-section">{user.fullName}</h1>
               <p className="mt-0.5 text-foreground-muted">
                 {[user.jobTitle, `${user.age} years old`].filter(Boolean).join(" · ")}
               </p>

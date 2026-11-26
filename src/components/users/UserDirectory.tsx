@@ -70,10 +70,10 @@ export default function UserDirectory({
   const searchText = query.q.trim();
 
   return (
-    <main className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
+    <main className="mx-auto w-full max-w-5xl px-4 pt-8 pb-section sm:px-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight">Users</h1>
+          <h1 className="title-page">Users</h1>
           <p className="mt-1 text-sm text-foreground-muted">
             Browse, add and manage everyone in one place.
           </p>
@@ -95,7 +95,7 @@ export default function UserDirectory({
       <div ref={listTopRef} className="scroll-mt-20" />
 
       {summary.people === 0 ? (
-        <div className="mt-8">
+        <div className="mt-content">
           <EmptyState
             icon={Users}
             title="No users yet"
