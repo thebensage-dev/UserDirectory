@@ -20,8 +20,7 @@ import { getUser, getUserOptions } from "@/server/users";
  *  edit and delete buttons. Its labels are the block's own (the CMS). */
 export default async function UserProfileBlock({
   block,
-  content,
-  params,
+  ctx: { content, params },
 }: BlockProps<"userProfile">) {
   const user = await getUser(Number(params.id));
   if (!user) notFound();

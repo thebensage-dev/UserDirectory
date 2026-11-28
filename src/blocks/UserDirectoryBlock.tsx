@@ -16,7 +16,7 @@ import { getDirectorySummary, getUserOptions, queryUsers } from "@/server/users"
  */
 export default async function UserDirectoryBlock({
   block,
-  searchParams,
+  ctx: { searchParams },
 }: BlockProps<"userDirectory">) {
   const view = readView((await cookies()).get(VIEW_COOKIE)?.value);
   const accessRequested = searchParams[ACCESS_REQUESTED_PARAM] === ACCESS_REQUESTED_VALUE;

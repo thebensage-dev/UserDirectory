@@ -3,5 +3,8 @@
 /* Shared tokens, base styles and component classes. */
 @import "@thebensage-dev/ui/styles.css";
 
+/* The CMS block components (@thebensage-dev/cms-client/react). */
+@import "@thebensage-dev/cms-client/styles.css";
+
 /* App-only styles. */
 @import "../styles/landing.css";

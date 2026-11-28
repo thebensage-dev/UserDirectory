@@ -18,7 +18,7 @@ import {
 } from "@thebensage-dev/ui";
 import { PathLink, PreviewBanner } from "@thebensage-dev/ui/next";
 import { fontVariables } from "@/app/fonts";
-import RefreshOnSave from "@/components/layout/RefreshOnSave";
+import { RefreshOnSave } from "@thebensage-dev/cms-client/react";
 import SiteFooter from "@/components/layout/SiteFooter";
 import DirectoryTextProvider from "@/components/users/DirectoryText";
 import { mainSiteUrl } from "@/lib/mainSite";
@@ -27,10 +27,10 @@ import { accountUrl, authConfigured, currentUser } from "@/server/auth";
 import { cmsPublicUrl, directoryPaths, getContent, resolveLink } from "@/server/cms";
 import "./globals.css";
 
-// The name and description come from the CMS (User Directory settings).
+// The name and description come from the CMS (the site's settings).
 export async function generateMetadata(): Promise<Metadata> {
   await connection(); // From the CMS at request time, not baked in at build.
-  const { name, description } = (await getContent()).settings;
+  const { name, headline: description } = (await getContent()).settings;
   return {
     title: { default: name, template: `%s · ${name}` },
     description,

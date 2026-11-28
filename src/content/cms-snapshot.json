@@ -7,7 +7,7 @@
       "title": "User Directory",
       "layout": [
         {
-          "id": "6b0a0afc6fc5e3000125b2d2",
+          "id": "6b0a1d442374b900010f1bf8",
           "tag": "Next.js 16 demo",
           "tagIcon": "Database",
           "headline": "A fast, searchable user directory",
@@ -16,7 +16,7 @@
           "blockName": null,
           "actions": [
             {
-              "id": "6b0a0afc6fc5e3000125b2cc",
+              "id": "6b0a1d442374b900010f1bf2",
               "label": "Open the directory",
               "style": "primary",
               "size": "lg",
@@ -35,7 +35,7 @@
               }
             },
             {
-              "id": "6b0a0afc6fc5e3000125b2cd",
+              "id": "6b0a1d442374b900010f1bf3",
               "label": "How it works",
               "style": "secondary",
               "size": "lg",
@@ -65,28 +65,28 @@
             "query": "siobhan",
             "rows": [
               {
-                "id": "6b0a0afc6fc5e3000125b2ce",
+                "id": "6b0a1d442374b900010f1bf4",
                 "name": "Amara Okafor",
                 "job": "Frontend developer",
                 "country": "GB",
                 "match": null
               },
               {
-                "id": "6b0a0afc6fc5e3000125b2cf",
+                "id": "6b0a1d442374b900010f1bf5",
                 "name": "Siobhán Murphy",
                 "job": "Marine biologist",
                 "country": "IE",
                 "match": true
               },
               {
-                "id": "6b0a0afc6fc5e3000125b2d0",
+                "id": "6b0a1d442374b900010f1bf6",
                 "name": "Yuki Tanaka",
                 "job": "Illustrator",
                 "country": "JP",
                 "match": null
               },
               {
-                "id": "6b0a0afc6fc5e3000125b2d1",
+                "id": "6b0a1d442374b900010f1bf7",
                 "name": "Lukas Becker",
                 "job": "Product designer",
                 "country": "DE",
@@ -96,7 +96,7 @@
           }
         },
         {
-          "id": "6b0a0afc6fc5e3000125b2d9",
+          "id": "6b0a1d442374b900010f1bff",
           "anchor": "features",
           "title": "Features",
           "intro": null,
@@ -105,42 +105,42 @@
           "blockName": null,
           "items": [
             {
-              "id": "6b0a0afc6fc5e3000125b2d3",
+              "id": "6b0a1d442374b900010f1bf9",
               "icon": "Search",
               "title": "Flexible search",
               "description": "Multi-word, accent-insensitive search across names, jobs, cities and interests, ranked by best match.",
               "tags": []
             },
             {
-              "id": "6b0a0afc6fc5e3000125b2d4",
+              "id": "6b0a1d442374b900010f1bfa",
               "icon": "Filter",
               "title": "Combined filters",
               "description": "Filter by country, age range and interests, with removable chips and live counts.",
               "tags": []
             },
             {
-              "id": "6b0a0afc6fc5e3000125b2d5",
+              "id": "6b0a1d442374b900010f1bfb",
               "icon": "Link2",
               "title": "Shareable views",
               "description": "Search, filters, sort and page all live in the URL, so any view can be bookmarked or shared.",
               "tags": []
             },
             {
-              "id": "6b0a0afc6fc5e3000125b2d6",
+              "id": "6b0a1d442374b900010f1bfc",
               "icon": "ShieldCheck",
               "title": "Shared validation",
               "description": "One schema checks the form as you type and again on the server, with errors beside each field.",
               "tags": []
             },
             {
-              "id": "6b0a0afc6fc5e3000125b2d7",
+              "id": "6b0a1d442374b900010f1bfd",
               "icon": "Zap",
               "title": "Server-rendered",
               "description": "Pages arrive fully rendered from the API, and changes update the page without a reload.",
               "tags": []
             },
             {
-              "id": "6b0a0afc6fc5e3000125b2d8",
+              "id": "6b0a1d442374b900010f1bfe",
               "icon": "MoonStar",
               "title": "Light and dark themes",
               "description": "Follows the system setting or your choice, applied on the server so there is no flash.",
@@ -150,7 +150,7 @@
           "blockType": "cardGrid"
         },
         {
-          "id": "6b0a0afc6fc5e3000125b2dd",
+          "id": "6b0a1d442374b900010f1c03",
           "anchor": "how",
           "title": "How it works",
           "intro": null,
@@ -159,21 +159,21 @@
           "blockName": null,
           "steps": [
             {
-              "id": "6b0a0afc6fc5e3000125b2da",
+              "id": "6b0a1d442374b900010f1c00",
               "icon": null,
               "actor": null,
               "title": "Server Components read the data",
               "description": "Pages call the API, a .NET service on PostgreSQL, and stream ready-made HTML."
             },
             {
-              "id": "6b0a0afc6fc5e3000125b2db",
+              "id": "6b0a1d442374b900010f1c01",
               "icon": null,
               "actor": null,
               "title": "The URL drives the list",
               "description": "nuqs keeps search and filters in the address bar; the API searches and pages in SQL."
             },
             {
-              "id": "6b0a0afc6fc5e3000125b2dc",
+              "id": "6b0a1d442374b900010f1c02",
               "icon": null,
               "actor": null,
               "title": "Server Actions make the changes",
@@ -204,13 +204,13 @@
           ]
         },
         {
-          "id": "6b0a0afc6fc5e3000125b2df",
+          "id": "6b0a1d442374b900010f1c05",
           "title": "Explore the directory",
           "body": "Search, filter, or sign in to add and edit records.",
           "blockName": null,
           "actions": [
             {
-              "id": "6b0a0afc6fc5e3000125b2de",
+              "id": "6b0a1d442374b900010f1c04",
               "label": "Open the directory",
               "style": "primary",
               "size": "lg",
@@ -253,7 +253,7 @@
         "title": null,
         "description": null
       },
-      "updatedAt": "2026-11-27T22:58:04.327Z",
+      "updatedAt": "2026-11-28T01:42:47.297Z",
       "createdAt": "2026-11-27T22:58:00.386Z",
       "_status": "published"
     },
@@ -263,7 +263,7 @@
       "title": "Users",
       "layout": [
         {
-          "id": "6b0a0afc6fc5e3000125b2e0",
+          "id": "6b0a1d452374b900010f1c06",
           "blockName": null,
           "blockType": "userDirectory",
           "heading": {
@@ -366,7 +366,7 @@
         "title": "Directory",
         "description": null
       },
-      "updatedAt": "2026-11-27T22:58:04.483Z",
+      "updatedAt": "2026-11-28T01:42:49.805Z",
       "createdAt": "2026-11-27T22:58:00.489Z",
       "_status": "published"
     },
@@ -376,7 +376,7 @@
       "title": "User",
       "layout": [
         {
-          "id": "6b0a0afc6fc5e3000125b2e1",
+          "id": "6b0a1d452374b900010f1c07",
           "blockName": null,
           "blockType": "userProfile",
           "labels": {
@@ -422,7 +422,7 @@
         "title": null,
         "description": null
       },
-      "updatedAt": "2026-11-27T22:58:04.861Z",
+      "updatedAt": "2026-11-28T01:42:51.043Z",
       "createdAt": "2026-11-27T22:58:00.604Z",
       "_status": "published"
     }
@@ -444,7 +444,7 @@
       "cta": null,
       "source": "https://github.com/thebensage-dev/UserDirectory",
       "page": null,
-      "updatedAt": "2026-11-27T22:58:00.750Z",
+      "updatedAt": "2026-11-28T01:42:47.119Z",
       "createdAt": "2026-11-27T22:58:00.750Z"
     },
     {
@@ -463,7 +463,7 @@
       "cta": "Browse the API",
       "source": "https://github.com/thebensage-dev/Api",
       "page": 10,
-      "updatedAt": "2026-11-27T22:58:00.778Z",
+      "updatedAt": "2026-11-28T01:42:47.160Z",
       "createdAt": "2026-11-27T22:58:00.778Z"
     },
     {
@@ -482,7 +482,7 @@
       "cta": "See the design system",
       "source": "https://github.com/thebensage-dev/SharedUI",
       "page": 5,
-      "updatedAt": "2026-11-27T22:58:00.825Z",
+      "updatedAt": "2026-11-28T01:42:47.197Z",
       "createdAt": "2026-11-27T22:58:00.825Z"
     },
     {
@@ -501,7 +501,7 @@
       "cta": "See how it works",
       "source": "https://github.com/thebensage-dev/Cms",
       "page": 6,
-      "updatedAt": "2026-11-27T22:58:00.873Z",
+      "updatedAt": "2026-11-28T01:42:47.236Z",
       "createdAt": "2026-11-27T22:58:00.873Z"
     }
   ],
@@ -509,16 +509,19 @@
     "id": 2,
     "label": "User Directory",
     "name": "User Directory",
+    "blockSets": [
+      "user-directory"
+    ],
     "slug": "user-directory",
+    "subdomain": "users",
+    "headline": "A searchable user directory built with Next.js and React, on a .NET API with PostgreSQL.",
     "role": null,
     "email": null,
-    "headline": null,
     "githubUrl": null,
-    "description": "A searchable user directory built with Next.js and React, on a .NET API with PostgreSQL.",
     "header": {
       "nav": [
         {
-          "id": "6b0a0afd6fc5e3000125b2fc",
+          "id": "6b0a1d462374b900010f1c22",
           "label": "Directory",
           "icon": "Users",
           "wideOnly": null,
@@ -547,11 +550,11 @@
       "owner": "TheBensage",
       "groups": [
         {
-          "id": "6b0a0afd6fc5e3000125b2ff",
+          "id": "6b0a1d462374b900010f1c25",
           "title": "Directory",
           "links": [
             {
-              "id": "6b0a0afd6fc5e3000125b2fd",
+              "id": "6b0a1d462374b900010f1c23",
               "label": "Overview",
               "icon": null,
               "link": {
@@ -567,7 +570,7 @@
               }
             },
             {
-              "id": "6b0a0afd6fc5e3000125b2fe",
+              "id": "6b0a1d462374b900010f1c24",
               "label": "Browse users",
               "icon": null,
               "link": {
@@ -585,11 +588,11 @@
           ]
         },
         {
-          "id": "6b0a0afd6fc5e3000125b302",
+          "id": "6b0a1d462374b900010f1c28",
           "title": "More from TheBensage",
           "links": [
             {
-              "id": "6b0a0afd6fc5e3000125b300",
+              "id": "6b0a1d462374b900010f1c26",
               "label": "Portfolio",
               "icon": null,
               "link": {
@@ -605,7 +608,7 @@
               }
             },
             {
-              "id": "6b0a0afd6fc5e3000125b301",
+              "id": "6b0a1d462374b900010f1c27",
               "label": "Source code",
               "icon": null,
               "link": {
@@ -625,7 +628,7 @@
       ],
       "legal": [
         {
-          "id": "6b0a0afd6fc5e3000125b303",
+          "id": "6b0a1d462374b900010f1c29",
           "label": "Privacy",
           "link": {
             "type": "mainSite",
@@ -640,7 +643,7 @@
           }
         },
         {
-          "id": "6b0a0afd6fc5e3000125b304",
+          "id": "6b0a1d462374b900010f1c2a",
           "label": "Cookies",
           "link": {
             "type": "mainSite",
@@ -655,7 +658,7 @@
           }
         },
         {
-          "id": "6b0a0afd6fc5e3000125b305",
+          "id": "6b0a1d462374b900010f1c2b",
           "label": "Terms",
           "link": {
             "type": "mainSite",
@@ -800,7 +803,7 @@
       "back": "Back to all users",
       "body": "That user may have been deleted, or the link is wrong."
     },
-    "updatedAt": "2026-11-27T22:58:05.133Z",
+    "updatedAt": "2026-11-28T01:42:51.166Z",
     "createdAt": "2026-11-27T22:57:58.746Z",
     "address": "http://users.localhost:8080"
   },

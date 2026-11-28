@@ -1,13 +1,13 @@
 import { createElement } from "react";
 import { BrandBlobs, Reveal, iconByName } from "@thebensage-dev/ui";
-import CmsButtons from "@/components/landing/CmsButtons";
+import { CmsButtons } from "@thebensage-dev/cms-client/react";
 import DirectorySummary from "@/components/landing/DirectorySummary";
 import SearchPreview from "@/components/landing/SearchPreview";
 import type { BlockProps } from "@/blocks/types";
 
 /** The landing page's opening: tag, headline (part of it in the gradient), intro, buttons, the
  *  live counts and the animated search preview. */
-export default function DirectoryHeroBlock({ block, content }: BlockProps<"directoryHero">) {
+export default function DirectoryHeroBlock({ block, ctx }: BlockProps<"directoryHero">) {
   const tagIcon = iconByName(block.tagIcon);
   const [start, end] = block.highlight ? block.headline.split(block.highlight) : [block.headline];
   return (
@@ -37,7 +37,7 @@ export default function DirectoryHeroBlock({ block, content }: BlockProps<"direc
           <p className="mt-5 max-w-xl text-lg text-foreground-muted">{block.intro}</p>
         </Reveal>
         <Reveal delay={300} className="mt-content flex flex-wrap gap-3">
-          <CmsButtons buttons={block.actions} content={content} nudge />
+          <CmsButtons buttons={block.actions} ctx={ctx} nudge />
         </Reveal>
         {block.summary.show && <DirectorySummary labels={block.summary} />}
       </div>

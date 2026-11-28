@@ -17,5 +17,7 @@ export default defineConfig({
     include: ["__tests__/**/*.test.{ts,tsx}"],
     // Server tests stub fetch, so nothing here ever reaches a real API.
     env: { API_URL: "http://api.test" },
+    // Our packages import Next by its bare paths (next/headers), which only a bundler resolves.
+    server: { deps: { inline: ["@thebensage-dev/auth", "@thebensage-dev/cms-client"] } },
   },
 });

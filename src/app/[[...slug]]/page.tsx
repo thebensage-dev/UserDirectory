@@ -4,8 +4,12 @@ import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import type { SearchParams } from "nuqs/server";
 import type { Page } from "@thebensage-dev/cms-client";
-import RenderBlocks from "@/components/RenderBlocks";
-import { getContent, matchPage } from "@/server/cms";
+import { RenderBlocks } from "@thebensage-dev/cms-client/react";
+import { BLOCKS } from "@/blocks/registry";
+import type { BlockContext } from "@/blocks/types";
+import { signInHref } from "@/lib/access";
+import { pageAccess } from "@/server/auth";
+import { cmsPublicUrl, getContent, matchPage, resolveLink } from "@/server/cms";
 import { getUser } from "@/server/users";
 
 // Every page comes from the CMS: the address picks the page (a path such as /users/[id] matches
@@ -46,19 +50,32 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 
 export default async function CmsPage(props: Props) {
   const content = await getContent();
-  const match = matchPage(content, await pathOf(props));
+  const path = await pathOf(props);
+  const match = matchPage(content, path);
   if (!match) notFound();
   const { page, params } = match;
+  const access = await pageAccess();
+  const ctx: BlockContext = {
+    content,
+    page,
+    params,
+    searchParams: await props.searchParams,
+    resolveLink: (link) => resolveLink(content, link),
+    mediaUrl: cmsPublicUrl(),
+    siteUrl: process.env.APP_URL?.replace(/\/+$/, "") || undefined,
+    access: {
+      signedIn: access.signedIn,
+      signInHref: access.canSignIn ? signInHref(path) : undefined,
+      requestAccessHref: access.requestAccessUrl,
+    },
+  };
 
   return (
     <main className={clsx(WIDTH[page.width], page.backdrop === "dotGrid" && "relative")}>
       {page.backdrop === "dotGrid" && (
         <div aria-hidden className="dot-grid absolute inset-x-0 top-0 h-[36rem]" />
       )}
-      <RenderBlocks
-        blocks={page.layout}
-        ctx={{ content, page, params, searchParams: await props.searchParams }}
-      />
+      <RenderBlocks blocks={page.layout} registry={BLOCKS} ctx={ctx} />
     </main>
   );
 }

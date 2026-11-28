@@ -22,7 +22,7 @@ It's a demo of a full-stack Next.js app done properly:
 
 ## Content
 
-Pages are CMS pages made of blocks; the directory and the profile are blocks too (`userDirectory`, `userProfile`), so the CMS decides where they go. `src/app/[[...slug]]/page.tsx` finds the page for the address (`/users/[id]` matches every profile) and draws its blocks through `src/blocks/registry.ts`. The form, dialogs, notices and refusals are worded in the site's settings (the Directory tab). Only the users and the validation rules come from the API.
+Pages are CMS pages made of blocks; the directory and the profile are blocks too (`userDirectory`, `userProfile`), so the CMS decides where they go. `src/app/[[...slug]]/page.tsx` finds the page for the address (`/users/[id]` matches every profile) and draws its blocks through `src/blocks/registry.ts`: the general blocks come from `@thebensage-dev/cms-client/react` (drawn the same on every site), the directory, profile and hero from `src/blocks/`. The form, dialogs, notices and refusals are worded in the site's settings (the Directory tab). Only the users and the validation rules come from the API.
 
 `src/server/cms.ts` reads the CMS (cached a minute, the last good copy while it's down, then [`src/content/cms-snapshot.json`](src/content/cms-snapshot.json), refreshed with `npm run content:snapshot`).
 
@@ -41,7 +41,7 @@ The pages need the API (`API_URL`, default `http://localhost:3002`) and the CMS 
 
 ## Sign-in
 
-Anyone can browse. Adding, editing and deleting need an authentik account in `user-directory-editors` (or an authentik admin). Sign-in is single sign-on with the other sites (a silent check on page load signs you in if you're already signed in elsewhere), and signing out signs out of every app. Anyone signed in without edit access gets a **Request access** link: authentik's shared request page with this app ticked; you approve by adding them to the group.
+Anyone can browse. Adding, editing and deleting need an authentik account in `user-directory-editors` (or an authentik admin). Sign-in is single sign-on with the other sites (a silent check on page load signs you in if you're already signed in elsewhere), and signing out signs out of every app. It's the shared `@thebensage-dev/auth` package (Infrastructure's `clients/auth`), configured in `src/server/auth.ts`. Anyone signed in without edit access gets a **Request access** link: authentik's shared request page with this app ticked; you approve by adding them to the group.
 
 Without the OIDC variables the directory is read-only.
 
