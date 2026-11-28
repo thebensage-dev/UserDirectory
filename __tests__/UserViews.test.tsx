@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 import { Highlight } from "@thebensage-dev/ui";
 import UserCards from "@/components/users/UserCards";
 import UserTable from "@/components/users/UserTable";
-import { makeUser } from "./fixtures";
+import { makeUser, withOptions } from "./fixtures";
 
 const alice = makeUser({
   id: 1,
@@ -25,7 +25,7 @@ const users = [alice, bob];
 
 describe("UserCards", () => {
   it("shows job title, location with full country name, and interests", () => {
-    render(<UserCards users={users} />);
+    render(<UserCards users={users} />, withOptions);
 
     expect(screen.getByText("Designer")).toBeInTheDocument();
     expect(screen.getByText("Leeds, United Kingdom")).toBeInTheDocument();
@@ -41,13 +41,13 @@ describe("UserCards", () => {
   });
 
   it("links each card to the profile", () => {
-    render(<UserCards users={users} />);
+    render(<UserCards users={users} />, withOptions);
     expect(screen.getByRole("link", { name: /Alice Smith/ })).toHaveAttribute("href", "/users/1");
     expect(screen.getByRole("link", { name: /Bob Johnson/ })).toHaveAttribute("href", "/users/2");
   });
 
   it("calls onEdit / onDelete with the right user, and hides them without handlers", async () => {
-    const { rerender } = render(<UserCards users={users} />);
+    const { rerender } = render(<UserCards users={users} />, withOptions);
     expect(screen.queryByRole("button", { name: /Edit|Delete/ })).not.toBeInTheDocument();
 
     const onEdit = vi.fn();
@@ -63,7 +63,7 @@ describe("UserCards", () => {
 
 describe("UserTable", () => {
   it("renders a row per user with country name and code", () => {
-    render(<UserTable users={users} />);
+    render(<UserTable users={users} />, withOptions);
 
     const rows = screen.getAllByRole("row");
     expect(rows).toHaveLength(3);
@@ -80,6 +80,7 @@ describe("UserTable", () => {
     const onSortChange = vi.fn();
     const { rerender } = render(
       <UserTable users={users} sort="id-desc" onSortChange={onSortChange} />,
+      withOptions,
     );
 
     await userEvent.click(screen.getByRole("button", { name: "Age" }));

@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import UserFormModal from "@/components/users/UserFormModal";
 import { createUserAction, updateUserAction } from "@/server/userActions";
 import type { User } from "@/types";
-import { makeUser } from "./fixtures";
+import { makeUser, withOptions } from "./fixtures";
 
 vi.mock("@/server/userActions", () => ({ createUserAction: vi.fn(), updateUserAction: vi.fn() }));
 vi.mock("next/navigation", () => ({ usePathname: () => "/users" }));
@@ -12,7 +12,7 @@ const updateMock = vi.mocked(updateUserAction);
 
 function renderModal(user?: User) {
   const onClose = vi.fn();
-  render(<UserFormModal isOpen user={user} onClose={onClose} />);
+  render(<UserFormModal isOpen user={user} onClose={onClose} />, withOptions);
   return { onClose };
 }
 
@@ -180,6 +180,7 @@ describe("UserFormModal", () => {
           onClose={onClose}
           access={{ signedIn: false, canEdit: false, canSignIn: true }}
         />,
+        withOptions,
       );
 
       expect(screen.getByText(/saving needs an account/)).toBeInTheDocument();

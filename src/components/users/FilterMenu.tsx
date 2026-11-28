@@ -3,11 +3,12 @@
 import clsx from "clsx";
 import { SlidersHorizontal } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
-import { countryName } from "@/lib/countries";
-import { pluralise } from "@/lib/format";
+import { useUserOptions } from "@/hooks/useUserOptions";
 import { NO_FILTERS, countActiveFilters, type ListQuery } from "@/lib/listQuery";
-import { AGE_RANGES } from "@/lib/userOptions";
+import { ageRangeLabel } from "@/lib/userOptions";
 import type { DirectorySummary } from "@/types";
+import { fill } from "@thebensage-dev/cms-client";
+import { useListText } from "./DirectoryText";
 import type { QueryPatch } from "./UserToolbar";
 
 type Props = {
@@ -23,6 +24,12 @@ export default function FilterMenu({ summary, query, onChange, resultCount }: Pr
   const buttonRef = useRef<HTMLButtonElement>(null);
   const id = useId();
   const active = countActiveFilters(query);
+  const { countryName, ageRanges } = useUserOptions();
+  const { filters: text } = useListText();
+  const ageChoices = [
+    { value: null, label: text.anyAge },
+    ...ageRanges.map((r) => ({ value: r.value, label: ageRangeLabel(r) })),
+  ];
 
   const close = () => {
     setOpen(false);
@@ -65,7 +72,7 @@ export default function FilterMenu({ summary, query, onChange, resultCount }: Pr
         className={clsx("btn btn-secondary px-3", active && "border-primary text-primary-ink")}
       >
         <SlidersHorizontal className="size-4" />
-        Filters
+        {text.button}
         {active > 0 && <span className="count-badge">{active}</span>}
       </button>
 
@@ -73,14 +80,14 @@ export default function FilterMenu({ summary, query, onChange, resultCount }: Pr
         <div
           id={`${id}-panel`}
           role="dialog"
-          aria-label="Filters"
+          aria-label={text.title}
           className="menu-panel left-0 sm:right-0 sm:left-auto"
         >
           <div className="flex items-center justify-between border-b border-border px-4 py-3">
-            <h2 className="font-semibold">Filters</h2>
+            <h2 className="font-semibold">{text.title}</h2>
             {active > 0 && (
               <button type="button" onClick={() => onChange(NO_FILTERS)} className="link text-sm">
-                Clear all
+                {text.clearAll}
               </button>
             )}
           </div>
@@ -88,17 +95,15 @@ export default function FilterMenu({ summary, query, onChange, resultCount }: Pr
           <div className="max-h-[60vh] space-y-5 overflow-y-auto p-4">
             <section>
               <label htmlFor={`${id}-country`} className="label">
-                Country
+                {text.country}
               </label>
               <select
                 id={`${id}-country`}
                 value={query.country ?? ""}
-                onChange={(e) =>
-                  onChange({ country: (e.target.value || null) as ListQuery["country"] })
-                }
+                onChange={(e) => onChange({ country: e.target.value || null })}
                 className="input"
               >
-                <option value="">Any country</option>
+                <option value="">{text.anyCountry}</option>
                 {summary.countries.map(([code, count]) => (
                   <option key={code} value={code}>
                     {countryName(code)} ({count})
@@ -109,10 +114,10 @@ export default function FilterMenu({ summary, query, onChange, resultCount }: Pr
 
             <section role="group" aria-labelledby={`${id}-age`}>
               <h3 id={`${id}-age`} className="label">
-                Age
+                {text.age}
               </h3>
               <div className="flex flex-wrap gap-2">
-                {[{ value: null, label: "Any" }, ...AGE_RANGES].map((r) => (
+                {ageChoices.map((r) => (
                   <button
                     key={r.label}
                     type="button"
@@ -129,10 +134,8 @@ export default function FilterMenu({ summary, query, onChange, resultCount }: Pr
             {summary.interests.length > 0 && (
               <section role="group" aria-labelledby={`${id}-interests`}>
                 <h3 id={`${id}-interests`} className="label flex items-baseline justify-between">
-                  Interests
-                  <span className="text-xs font-normal text-foreground-muted">
-                    Match all selected
-                  </span>
+                  {text.interests}
+                  <span className="text-xs font-normal text-foreground-muted">{text.matchAll}</span>
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {summary.interests.map(([interest, count]) => (
@@ -154,7 +157,7 @@ export default function FilterMenu({ summary, query, onChange, resultCount }: Pr
 
           <div className="flex justify-end border-t border-border px-4 py-3">
             <button type="button" onClick={close} className="btn btn-primary w-full sm:w-auto">
-              Show {pluralise(resultCount, "person", "people")}
+              {fill(resultCount === 1 ? text.showOne : text.showMany, { count: resultCount })}
             </button>
           </div>
         </div>

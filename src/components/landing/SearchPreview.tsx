@@ -1,16 +1,11 @@
 import clsx from "clsx";
 import { Search } from "lucide-react";
 import { Avatar } from "@thebensage-dev/ui";
+import type { Block } from "@thebensage-dev/cms-client";
 
-const PEOPLE = [
-  { name: "Amara Okafor", job: "Frontend developer", country: "GB" },
-  { name: "Siobhán Murphy", job: "Marine biologist", country: "IE" },
-  { name: "Yuki Tanaka", job: "Illustrator", country: "JP" },
-  { name: "Lukas Becker", job: "Product designer", country: "DE" },
-];
-const QUERY = "siobhan";
-
-export default function SearchPreview() {
+/** The animated example search beside the landing page's headline; its query and rows are the
+ *  CMS's (the directory hero block's search preview). */
+export default function SearchPreview({ preview }: { preview: Block<"directoryHero">["preview"] }) {
   return (
     // A looping illustration of the search, not content: hidden from screen readers.
     <div className="float relative" aria-hidden="true">
@@ -23,22 +18,22 @@ export default function SearchPreview() {
         <div className="space-y-3 p-4">
           <div className="input flex items-center gap-2 text-foreground">
             <Search className="size-4 shrink-0 text-foreground-muted" />
-            <span className="typewriter" style={{ "--chars": QUERY.length } as React.CSSProperties}>
-              {QUERY}
+            <span
+              className="typewriter"
+              style={{ "--chars": preview.query.length } as React.CSSProperties}
+            >
+              {preview.query}
             </span>
           </div>
           <ul className="space-y-1">
-            {PEOPLE.map((p) => (
-              <li
-                key={p.name}
-                className={clsx("preview-row", p.name.startsWith("Sio") && "is-match")}
-              >
-                <Avatar name={p.name} size="sm" />
+            {(preview.rows ?? []).map((row, i) => (
+              <li key={row.id ?? i} className={clsx("preview-row", row.match && "is-match")}>
+                <Avatar name={row.name} size="sm" />
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-sm font-medium">{p.name}</span>
-                  <span className="block truncate text-xs text-foreground-muted">{p.job}</span>
+                  <span className="block truncate text-sm font-medium">{row.name}</span>
+                  <span className="block truncate text-xs text-foreground-muted">{row.job}</span>
                 </span>
-                <span className="code-badge">{p.country}</span>
+                <span className="code-badge">{row.country}</span>
               </li>
             ))}
           </ul>

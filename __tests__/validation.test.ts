@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { userSchema } from "@/lib/userSchema";
+import { userSchema as makeSchema } from "@/lib/userSchema";
+import { OPTIONS } from "./fixtures";
+
+const userSchema = makeSchema(OPTIONS);
 
 const valid = {
   fullName: "Siobhán O'Neill-Murphy",
@@ -10,7 +13,7 @@ const valid = {
   city: "",
   jobTitle: "",
   bio: "",
-  interests: ["Hiking"],
+  interests: ["Books"],
 };
 
 const errorsFor = (input: unknown) => {

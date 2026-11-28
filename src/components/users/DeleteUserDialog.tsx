@@ -3,7 +3,10 @@
 import { useTransition } from "react";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@thebensage-dev/ui";
-import { ACCESS_MAILTO } from "@/lib/access";
+import { fill } from "@thebensage-dev/cms-client";
+import { accessMailto } from "@/lib/access";
+import Template from "./Template";
+import { useDirectoryText } from "./DirectoryText";
 import { deleteUserAction } from "@/server/userActions";
 import type { User } from "@/types";
 
@@ -16,6 +19,8 @@ export default function DeleteUserDialog({
   onClose: () => void;
   onDeleted?: () => void;
 }) {
+  const { shared } = useDirectoryText();
+  const text = shared.delete;
   const [busy, startTransition] = useTransition();
 
   const confirm = () =>
@@ -27,8 +32,11 @@ export default function DeleteUserDialog({
           // Visitors can try deleting; the server refuses it and nothing changes.
           onClose();
           toast.error(result.error, {
-            description: `${user.fullName} is still here: only editors can delete people.`,
-            action: { label: "Email me for access", onClick: () => location.assign(ACCESS_MAILTO) },
+            description: fill(text.refused, { name: user.fullName }),
+            action: {
+              label: text.emailForAccess,
+              onClick: () => location.assign(accessMailto(shared)),
+            },
           });
           return;
         }
@@ -37,10 +45,10 @@ export default function DeleteUserDialog({
           return;
         }
       } catch {
-        toast.error(`Couldn't delete ${user.fullName}. Please try again.`);
+        toast.error(fill(text.failed, { name: user.fullName }));
         return;
       }
-      toast.success(`Deleted ${user.fullName}`);
+      toast.success(fill(text.deleted, { name: user.fullName }));
       onClose();
       onDeleted?.();
     });
@@ -48,13 +56,18 @@ export default function DeleteUserDialog({
   return (
     <ConfirmDialog
       open={user !== null}
-      title="Delete user?"
+      title={text.title}
       description={
-        <>
-          <strong className="font-medium text-foreground">{user?.fullName}</strong> will be removed
-          permanently. This can&apos;t be undone.
-        </>
+        <Template
+          text={text.body}
+          values={{
+            name: <strong className="font-medium text-foreground">{user?.fullName}</strong>,
+          }}
+        />
       }
+      confirmLabel={text.confirm}
+      busyLabel={text.busy}
+      cancelLabel={text.cancel}
       busy={busy}
       onConfirm={confirm}
       onCancel={onClose}

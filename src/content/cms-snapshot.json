@@ -1,0 +1,875 @@
+{
+  "site": "user-directory",
+  "pages": [
+    {
+      "id": 13,
+      "site": 2,
+      "title": "User Directory",
+      "layout": [
+        {
+          "id": "6b0a0afc6fc5e3000125b2d2",
+          "tag": "Next.js 16 demo",
+          "tagIcon": "Database",
+          "headline": "A fast, searchable user directory",
+          "highlight": "searchable",
+          "intro": "Search, filter and edit records in an accessible app, rendered on the server from a .NET API on PostgreSQL, with every change validated in the browser and on the server.",
+          "blockName": null,
+          "actions": [
+            {
+              "id": "6b0a0afc6fc5e3000125b2cc",
+              "label": "Open the directory",
+              "style": "primary",
+              "size": "lg",
+              "icon": "ArrowRight",
+              "iconPosition": "end",
+              "link": {
+                "type": "url",
+                "newTab": null,
+                "page": null,
+                "url": "/users",
+                "project": null,
+                "projectTarget": "default",
+                "requestApp": null,
+                "anchor": null,
+                "download": null
+              }
+            },
+            {
+              "id": "6b0a0afc6fc5e3000125b2cd",
+              "label": "How it works",
+              "style": "secondary",
+              "size": "lg",
+              "icon": null,
+              "iconPosition": "end",
+              "link": {
+                "type": "url",
+                "newTab": null,
+                "page": null,
+                "url": "#how",
+                "project": null,
+                "projectTarget": "default",
+                "requestApp": null,
+                "anchor": null,
+                "download": null
+              }
+            }
+          ],
+          "blockType": "directoryHero",
+          "summary": {
+            "show": true,
+            "users": "users",
+            "countries": "countries",
+            "interests": "interests"
+          },
+          "preview": {
+            "query": "siobhan",
+            "rows": [
+              {
+                "id": "6b0a0afc6fc5e3000125b2ce",
+                "name": "Amara Okafor",
+                "job": "Frontend developer",
+                "country": "GB",
+                "match": null
+              },
+              {
+                "id": "6b0a0afc6fc5e3000125b2cf",
+                "name": "Siobhán Murphy",
+                "job": "Marine biologist",
+                "country": "IE",
+                "match": true
+              },
+              {
+                "id": "6b0a0afc6fc5e3000125b2d0",
+                "name": "Yuki Tanaka",
+                "job": "Illustrator",
+                "country": "JP",
+                "match": null
+              },
+              {
+                "id": "6b0a0afc6fc5e3000125b2d1",
+                "name": "Lukas Becker",
+                "job": "Product designer",
+                "country": "DE",
+                "match": null
+              }
+            ]
+          }
+        },
+        {
+          "id": "6b0a0afc6fc5e3000125b2d9",
+          "anchor": "features",
+          "title": "Features",
+          "intro": null,
+          "columns": "3",
+          "tagsLabel": null,
+          "blockName": null,
+          "items": [
+            {
+              "id": "6b0a0afc6fc5e3000125b2d3",
+              "icon": "Search",
+              "title": "Flexible search",
+              "description": "Multi-word, accent-insensitive search across names, jobs, cities and interests, ranked by best match.",
+              "tags": []
+            },
+            {
+              "id": "6b0a0afc6fc5e3000125b2d4",
+              "icon": "Filter",
+              "title": "Combined filters",
+              "description": "Filter by country, age range and interests, with removable chips and live counts.",
+              "tags": []
+            },
+            {
+              "id": "6b0a0afc6fc5e3000125b2d5",
+              "icon": "Link2",
+              "title": "Shareable views",
+              "description": "Search, filters, sort and page all live in the URL, so any view can be bookmarked or shared.",
+              "tags": []
+            },
+            {
+              "id": "6b0a0afc6fc5e3000125b2d6",
+              "icon": "ShieldCheck",
+              "title": "Shared validation",
+              "description": "One schema checks the form as you type and again on the server, with errors beside each field.",
+              "tags": []
+            },
+            {
+              "id": "6b0a0afc6fc5e3000125b2d7",
+              "icon": "Zap",
+              "title": "Server-rendered",
+              "description": "Pages arrive fully rendered from the API, and changes update the page without a reload.",
+              "tags": []
+            },
+            {
+              "id": "6b0a0afc6fc5e3000125b2d8",
+              "icon": "MoonStar",
+              "title": "Light and dark themes",
+              "description": "Follows the system setting or your choice, applied on the server so there is no flash.",
+              "tags": []
+            }
+          ],
+          "blockType": "cardGrid"
+        },
+        {
+          "id": "6b0a0afc6fc5e3000125b2dd",
+          "anchor": "how",
+          "title": "How it works",
+          "intro": null,
+          "showCount": false,
+          "aside": "none",
+          "blockName": null,
+          "steps": [
+            {
+              "id": "6b0a0afc6fc5e3000125b2da",
+              "icon": null,
+              "actor": null,
+              "title": "Server Components read the data",
+              "description": "Pages call the API, a .NET service on PostgreSQL, and stream ready-made HTML."
+            },
+            {
+              "id": "6b0a0afc6fc5e3000125b2db",
+              "icon": null,
+              "actor": null,
+              "title": "The URL drives the list",
+              "description": "nuqs keeps search and filters in the address bar; the API searches and pages in SQL."
+            },
+            {
+              "id": "6b0a0afc6fc5e3000125b2dc",
+              "icon": null,
+              "actor": null,
+              "title": "Server Actions make the changes",
+              "description": "Validated actions send your signed-in token to the API, then revalidate the page."
+            }
+          ],
+          "blockType": "timeline",
+          "note": {
+            "title": null,
+            "body": null
+          },
+          "tryAccess": {
+            "title": null,
+            "body": null,
+            "signedIn": null,
+            "requestAccess": null,
+            "signIn": null
+          },
+          "tags": [
+            "Next.js 16",
+            "React 19",
+            "TypeScript",
+            ".NET API + PostgreSQL",
+            "Tailwind CSS v4",
+            "zod",
+            "nuqs",
+            "Vitest"
+          ]
+        },
+        {
+          "id": "6b0a0afc6fc5e3000125b2df",
+          "title": "Explore the directory",
+          "body": "Search, filter, or sign in to add and edit records.",
+          "blockName": null,
+          "actions": [
+            {
+              "id": "6b0a0afc6fc5e3000125b2de",
+              "label": "Open the directory",
+              "style": "primary",
+              "size": "lg",
+              "icon": "ArrowRight",
+              "iconPosition": "end",
+              "link": {
+                "type": "url",
+                "newTab": null,
+                "page": null,
+                "url": "/users",
+                "project": null,
+                "projectTarget": "default",
+                "requestApp": null,
+                "anchor": null,
+                "download": null
+              }
+            }
+          ],
+          "blockType": "callToAction"
+        }
+      ],
+      "navLabel": "Overview",
+      "icon": null,
+      "cardLabel": null,
+      "summary": null,
+      "path": "/",
+      "width": "full",
+      "backdrop": "dotGrid",
+      "inSitemap": false,
+      "breadcrumbs": [
+        {
+          "id": "6b0a0af86fc5e3000125b1f7",
+          "doc": 13,
+          "url": "/",
+          "label": "Overview"
+        }
+      ],
+      "parent": null,
+      "meta": {
+        "title": null,
+        "description": null
+      },
+      "updatedAt": "2026-11-27T22:58:04.327Z",
+      "createdAt": "2026-11-27T22:58:00.386Z",
+      "_status": "published"
+    },
+    {
+      "id": 14,
+      "site": 2,
+      "title": "Users",
+      "layout": [
+        {
+          "id": "6b0a0afc6fc5e3000125b2e0",
+          "blockName": null,
+          "blockType": "userDirectory",
+          "heading": {
+            "title": "Users",
+            "intro": "Browse, add and manage everyone in one place.",
+            "add": "Add user",
+            "addHint": "Add user (N)"
+          },
+          "stats": {
+            "users": "Users",
+            "averageAge": "Average age",
+            "countries": "Countries",
+            "topInterest": "Top interest"
+          },
+          "toolbar": {
+            "searchPlaceholder": "Search by name, email, job, city, interest…",
+            "search": "Search",
+            "clearSearch": "Clear search",
+            "sort": "Sort users",
+            "bestMatch": "Best match",
+            "layout": "Layout",
+            "cards": "Cards view",
+            "table": "Table view"
+          },
+          "sorts": {
+            "idDesc": "Recently added",
+            "idAsc": "First added",
+            "nameAsc": "Name (A–Z)",
+            "nameDesc": "Name (Z–A)",
+            "ageAsc": "Age (youngest)",
+            "ageDesc": "Age (oldest)",
+            "countryAsc": "Country (A–Z)",
+            "countryDesc": "Country (Z–A)"
+          },
+          "filters": {
+            "button": "Filters",
+            "title": "Filters",
+            "clearAll": "Clear all",
+            "country": "Country",
+            "anyCountry": "Any country",
+            "age": "Age",
+            "anyAge": "Any",
+            "interests": "Interests",
+            "matchAll": "Match all selected",
+            "showOne": "Show {count} user",
+            "showMany": "Show {count} users",
+            "activeCountry": "Country: {value}",
+            "activeAge": "Age: {value}",
+            "remove": "Remove filter {label}"
+          },
+          "results": {
+            "name": "Name",
+            "age": "Age",
+            "country": "Country",
+            "interests": "Interests",
+            "actions": "Actions",
+            "yearsOld": "{age} years old",
+            "edit": "Edit",
+            "delete": "Delete",
+            "editUser": "Edit {name}",
+            "deleteUser": "Delete {name}"
+          },
+          "empty": {
+            "noUsersTitle": "No users yet",
+            "noUsersBody": "Add your first user to get started.",
+            "noMatchSearch": "No one matches “{search}”",
+            "noMatchFilters": "No one matches these filters",
+            "noMatchBody": "Try fewer words, a different spelling, or removing a filter.",
+            "clear": "Clear search and filters"
+          },
+          "pagination": {
+            "nav": "Pagination",
+            "showing": "Showing",
+            "of": "of",
+            "previous": "Previous page",
+            "next": "Next page",
+            "page": "Page {page}",
+            "perPage": "Per page"
+          }
+        }
+      ],
+      "navLabel": "Directory",
+      "icon": null,
+      "cardLabel": null,
+      "summary": null,
+      "path": "/users",
+      "width": "wide",
+      "backdrop": "none",
+      "inSitemap": false,
+      "breadcrumbs": [
+        {
+          "id": "6b0a0af86fc5e3000125b1f8",
+          "doc": 14,
+          "url": "/users",
+          "label": "Directory"
+        }
+      ],
+      "parent": null,
+      "meta": {
+        "title": "Directory",
+        "description": null
+      },
+      "updatedAt": "2026-11-27T22:58:04.483Z",
+      "createdAt": "2026-11-27T22:58:00.489Z",
+      "_status": "published"
+    },
+    {
+      "id": 15,
+      "site": 2,
+      "title": "User",
+      "layout": [
+        {
+          "id": "6b0a0afc6fc5e3000125b2e1",
+          "blockName": null,
+          "blockType": "userProfile",
+          "labels": {
+            "back": "All users",
+            "yearsOld": "{age} years old",
+            "email": "Email",
+            "phone": "Phone",
+            "location": "Location",
+            "jobTitle": "Job title",
+            "memberSince": "Member since",
+            "lastUpdated": "Last updated",
+            "notProvided": "Not provided",
+            "interests": "Interests",
+            "edit": "Edit",
+            "delete": "Delete"
+          }
+        }
+      ],
+      "navLabel": "User",
+      "icon": null,
+      "cardLabel": null,
+      "summary": null,
+      "path": "/users/[id]",
+      "width": "narrow",
+      "backdrop": "none",
+      "inSitemap": false,
+      "breadcrumbs": [
+        {
+          "id": "6b0a0af86fc5e3000125b1f9",
+          "doc": 14,
+          "url": "/users",
+          "label": "Directory"
+        },
+        {
+          "id": "6b0a0af86fc5e3000125b1fa",
+          "doc": 15,
+          "url": "/users/[id]",
+          "label": "User"
+        }
+      ],
+      "parent": 14,
+      "meta": {
+        "title": null,
+        "description": null
+      },
+      "updatedAt": "2026-11-27T22:58:04.861Z",
+      "createdAt": "2026-11-27T22:58:00.604Z",
+      "_status": "published"
+    }
+  ],
+  "projects": [
+    {
+      "id": 1,
+      "_order": "a0",
+      "title": "User Directory",
+      "description": "Search, filter and manage a directory of users. Server Components read from the API, Server Actions send each edit with your sign-in token, and a card or table view remembers your choice.",
+      "tags": [
+        "Next.js 16",
+        "React 19",
+        "Server Actions",
+        "Tailwind v4"
+      ],
+      "address": "USER_DIRECTORY_URL",
+      "fallbackUrl": "http://localhost:3000",
+      "cta": null,
+      "source": "https://github.com/thebensage-dev/UserDirectory",
+      "page": null,
+      "updatedAt": "2026-11-27T22:58:00.750Z",
+      "createdAt": "2026-11-27T22:58:00.750Z"
+    },
+    {
+      "id": 2,
+      "_order": "a1",
+      "title": "API",
+      "description": "A general-use REST API that the User Directory runs on. Its first feature is a user directory with accent-insensitive search, filters and paging in PostgreSQL, OpenAPI with interactive docs, and writes signed in through authentik and logged per change.",
+      "tags": [
+        ".NET",
+        "Entity Framework Core",
+        "PostgreSQL",
+        "OpenAPI"
+      ],
+      "address": "API_URL",
+      "fallbackUrl": "http://localhost:3002",
+      "cta": "Browse the API",
+      "source": "https://github.com/thebensage-dev/Api",
+      "page": 10,
+      "updatedAt": "2026-11-27T22:58:00.778Z",
+      "createdAt": "2026-11-27T22:58:00.778Z"
+    },
+    {
+      "id": 3,
+      "_order": "a2",
+      "title": "Shared UI",
+      "description": "The design system behind these sites: React components, hooks and one role-based colour palette that also brands the sign-in pages and emails, published as an npm package on GitHub Packages and documented in Storybook.",
+      "tags": [
+        "React 19",
+        "Storybook 10",
+        "Tailwind v4",
+        "Vitest"
+      ],
+      "address": "STORYBOOK_URL",
+      "fallbackUrl": "http://localhost:6006",
+      "cta": "See the design system",
+      "source": "https://github.com/thebensage-dev/SharedUI",
+      "page": 5,
+      "updatedAt": "2026-11-27T22:58:00.825Z",
+      "createdAt": "2026-11-27T22:58:00.825Z"
+    },
+    {
+      "id": 4,
+      "_order": "a3",
+      "title": "CMS",
+      "description": "The content behind both sites, in a self-hosted Payload CMS: pages built from blocks, Live Preview beside the editor, drafts, an image library and single sign-on, with read-only access for anyone who asks.",
+      "tags": [
+        "Payload 3",
+        "Next.js 16",
+        "PostgreSQL",
+        "Live Preview"
+      ],
+      "address": "CMS_PUBLIC_URL",
+      "fallbackUrl": "http://localhost:3003",
+      "cta": "See how it works",
+      "source": "https://github.com/thebensage-dev/Cms",
+      "page": 6,
+      "updatedAt": "2026-11-27T22:58:00.873Z",
+      "createdAt": "2026-11-27T22:58:00.873Z"
+    }
+  ],
+  "settings": {
+    "id": 2,
+    "label": "User Directory",
+    "name": "User Directory",
+    "slug": "user-directory",
+    "role": null,
+    "email": null,
+    "headline": null,
+    "githubUrl": null,
+    "description": "A searchable user directory built with Next.js and React, on a .NET API with PostgreSQL.",
+    "header": {
+      "nav": [
+        {
+          "id": "6b0a0afd6fc5e3000125b2fc",
+          "label": "Directory",
+          "icon": "Users",
+          "wideOnly": null,
+          "link": {
+            "type": "url",
+            "newTab": null,
+            "page": null,
+            "url": "/users",
+            "project": null,
+            "projectTarget": "default",
+            "requestApp": null,
+            "anchor": null,
+            "download": null
+          }
+        }
+      ],
+      "labels": {
+        "signIn": null,
+        "signOut": null,
+        "account": "Your account: name, email and password",
+        "theme": null
+      }
+    },
+    "footer": {
+      "tagline": "A demo of server-rendered search, filtering and editing, part of TheBensage's portfolio.",
+      "owner": "TheBensage",
+      "groups": [
+        {
+          "id": "6b0a0afd6fc5e3000125b2ff",
+          "title": "Directory",
+          "links": [
+            {
+              "id": "6b0a0afd6fc5e3000125b2fd",
+              "label": "Overview",
+              "icon": null,
+              "link": {
+                "type": "url",
+                "newTab": null,
+                "page": null,
+                "url": "/",
+                "project": null,
+                "projectTarget": "default",
+                "requestApp": null,
+                "anchor": null,
+                "download": null
+              }
+            },
+            {
+              "id": "6b0a0afd6fc5e3000125b2fe",
+              "label": "Browse users",
+              "icon": null,
+              "link": {
+                "type": "url",
+                "newTab": null,
+                "page": null,
+                "url": "/users",
+                "project": null,
+                "projectTarget": "default",
+                "requestApp": null,
+                "anchor": null,
+                "download": null
+              }
+            }
+          ]
+        },
+        {
+          "id": "6b0a0afd6fc5e3000125b302",
+          "title": "More from TheBensage",
+          "links": [
+            {
+              "id": "6b0a0afd6fc5e3000125b300",
+              "label": "Portfolio",
+              "icon": null,
+              "link": {
+                "type": "mainSite",
+                "newTab": null,
+                "page": null,
+                "url": "/",
+                "project": null,
+                "projectTarget": "default",
+                "requestApp": null,
+                "anchor": null,
+                "download": null
+              }
+            },
+            {
+              "id": "6b0a0afd6fc5e3000125b301",
+              "label": "Source code",
+              "icon": null,
+              "link": {
+                "type": "url",
+                "newTab": true,
+                "page": null,
+                "url": "https://github.com/thebensage-dev/UserDirectory",
+                "project": null,
+                "projectTarget": "default",
+                "requestApp": null,
+                "anchor": null,
+                "download": null
+              }
+            }
+          ]
+        }
+      ],
+      "legal": [
+        {
+          "id": "6b0a0afd6fc5e3000125b303",
+          "label": "Privacy",
+          "link": {
+            "type": "mainSite",
+            "newTab": null,
+            "page": null,
+            "url": "/privacy",
+            "project": null,
+            "projectTarget": "default",
+            "requestApp": null,
+            "anchor": null,
+            "download": null
+          }
+        },
+        {
+          "id": "6b0a0afd6fc5e3000125b304",
+          "label": "Cookies",
+          "link": {
+            "type": "mainSite",
+            "newTab": null,
+            "page": null,
+            "url": "/privacy#cookies",
+            "project": null,
+            "projectTarget": "default",
+            "requestApp": null,
+            "anchor": null,
+            "download": null
+          }
+        },
+        {
+          "id": "6b0a0afd6fc5e3000125b305",
+          "label": "Terms",
+          "link": {
+            "type": "mainSite",
+            "newTab": null,
+            "page": null,
+            "url": "/terms",
+            "project": null,
+            "projectTarget": "default",
+            "requestApp": null,
+            "anchor": null,
+            "download": null
+          }
+        }
+      ]
+    },
+    "interface": {
+      "header": {
+        "menu": "Menu",
+        "nav": "Main",
+        "newTab": "(opens in a new tab)",
+        "light": "Light theme",
+        "system": "Match system theme",
+        "dark": "Dark theme"
+      },
+      "footer": {
+        "nav": "Footer",
+        "newTab": "(opens in a new tab)",
+        "rights": "All rights reserved."
+      },
+      "cookies": {
+        "title": "Cookies",
+        "body": "This site uses only essential cookies, to keep you signed in and remember your preferences. It does not use analytics or tracking cookies.",
+        "dismiss": "Got it",
+        "details": "Cookie details",
+        "region": "Cookie notice"
+      }
+    },
+    "directory": {
+      "contactEmail": "hello@thebensage.com",
+      "contactSubject": "User Directory access",
+      "commonCountries": [
+        "GB",
+        "US",
+        "CA",
+        "IE",
+        "AU",
+        "DE",
+        "FR",
+        "IN"
+      ],
+      "form": {
+        "addTitle": "Add new user",
+        "editTitle": "Edit user",
+        "addIntro": "Fields marked optional can be filled in later.",
+        "editIntro": "Update {name}'s details.",
+        "tryItOut": "Try it out: every field is checked, but saving needs an account.",
+        "close": "Close",
+        "optional": "(optional)",
+        "fullName": "Full name",
+        "fullNamePlaceholder": "e.g. Jane Doe",
+        "email": "Email",
+        "emailPlaceholder": "jane@example.com",
+        "phone": "Phone",
+        "phonePlaceholder": "+44 7700 900123",
+        "age": "Age",
+        "agePlaceholder": "18–120",
+        "country": "Country",
+        "selectCountry": "Select country",
+        "commonCountries": "Common",
+        "allCountries": "All countries",
+        "city": "City",
+        "cityPlaceholder": "e.g. Manchester",
+        "jobTitle": "Job title",
+        "jobTitlePlaceholder": "e.g. Product designer",
+        "interests": "Interests",
+        "interestsCount": "{selected} of {max} selected",
+        "bio": "Bio",
+        "bioPlaceholder": "A sentence or two about them",
+        "cancel": "Cancel",
+        "save": "Save changes",
+        "saving": "Saving…",
+        "add": "Add user",
+        "adding": "Adding…",
+        "saved": "Saved changes to {name}",
+        "added": "Added {name}"
+      },
+      "delete": {
+        "title": "Delete user?",
+        "body": "{name} will be removed permanently. This can't be undone.",
+        "confirm": "Delete",
+        "busy": "Deleting…",
+        "cancel": "Cancel",
+        "deleted": "Deleted {name}",
+        "failed": "Couldn't delete {name}. Please try again.",
+        "refused": "{name} is still here: only editors can delete users.",
+        "emailForAccess": "Email me for access"
+      },
+      "refusals": {
+        "signInRequired": "Please sign in to make changes.",
+        "editAccessRequired": "Your account can't make changes yet.",
+        "notFound": "That user no longer exists.",
+        "fixFields": "Please fix the highlighted fields.",
+        "emailTaken": "That email is already in use.",
+        "emailTakenField": "Another user already has this email"
+      },
+      "access": {
+        "visitorRefused": "Everything you entered passed the checks, but visitors can't save changes. I'm happy to give you temporary access to try the rest.",
+        "memberRefused": "Everything you entered passed the checks, but your account doesn't have edit access yet. Ask for it and I'll approve it.",
+        "requestAccess": "Request access",
+        "requestEditAccess": "Request edit access",
+        "emailForAccess": "Email me for access",
+        "signIn": "Sign in",
+        "visitorLead": "You're browsing as a visitor.",
+        "visitorBody": "Try adding or editing someone to see the form checks at work; saving changes needs an account.",
+        "visitorWithRequest": "{request} and I'll approve it, or {email}.",
+        "visitorWithoutRequest": "I'm happy to create one and give you temporary access: {email}.",
+        "emailMe": "email me",
+        "memberLead": "You're signed in, but can't edit yet.",
+        "memberBody": "Try adding or editing someone to see the form checks at work.",
+        "memberRequest": "{request} and I'll approve it.",
+        "memberRefresh": "Already approved? {refresh}.",
+        "refreshLink": "Refresh your sign-in"
+      },
+      "requestSent": {
+        "title": "Request sent",
+        "body": "Thanks for asking. I've been notified and will look at it soon. Your account already works across the site; once editing is approved you'll get an email, and you can make changes here.",
+        "button": "Got it"
+      },
+      "errorPage": {
+        "title": "Something went wrong",
+        "body": "The page couldn't be loaded. Check the server is running and try again.",
+        "retry": "Try again"
+      }
+    },
+    "preview": {
+      "label": "You're previewing unpublished changes.",
+      "exit": "Back to the published site"
+    },
+    "notFound": {
+      "eyebrow": null,
+      "title": "Not found",
+      "back": "Back to all users",
+      "body": "That user may have been deleted, or the link is wrong."
+    },
+    "updatedAt": "2026-11-27T22:58:05.133Z",
+    "createdAt": "2026-11-27T22:57:58.746Z",
+    "address": "http://users.localhost:8080"
+  },
+  "media": [
+    {
+      "id": 5,
+      "alt": "Storybook's colour palette: each role, such as background, surface and primary, with its light and dark value and what it's for.",
+      "updatedAt": "2026-11-27T22:57:58.673Z",
+      "createdAt": "2026-11-27T22:57:58.673Z",
+      "url": "http://cms.localhost:8080/api/media/file/storybook-colours.webp",
+      "thumbnailURL": null,
+      "filename": "storybook-colours.webp",
+      "mimeType": "image/webp",
+      "filesize": 87476,
+      "width": 1600,
+      "height": 1000
+    },
+    {
+      "id": 4,
+      "alt": "Storybook's page for the PageIntro component: the component list on the left, a live example and the table of its props.",
+      "updatedAt": "2026-11-27T22:57:58.666Z",
+      "createdAt": "2026-11-27T22:57:58.666Z",
+      "url": "http://cms.localhost:8080/api/media/file/storybook-component.webp",
+      "thumbnailURL": null,
+      "filename": "storybook-component.webp",
+      "mimeType": "image/webp",
+      "filesize": 54262,
+      "width": 1600,
+      "height": 1000
+    },
+    {
+      "id": 3,
+      "alt": "The Portfolio site's settings in the CMS, with tabs for general details, header, footer, interface wording, preview and the page-not-found message.",
+      "updatedAt": "2026-11-27T22:57:58.659Z",
+      "createdAt": "2026-11-27T22:57:58.659Z",
+      "url": "http://cms.localhost:8080/api/media/file/cms-site-settings.webp",
+      "thumbnailURL": null,
+      "filename": "cms-site-settings.webp",
+      "mimeType": "image/webp",
+      "filesize": 36798,
+      "width": 1600,
+      "height": 1000
+    },
+    {
+      "id": 2,
+      "alt": "Editing the CMS page in the CMS: its blocks listed on the left, and the page itself on the right in Live Preview.",
+      "updatedAt": "2026-11-27T22:57:58.653Z",
+      "createdAt": "2026-11-27T22:57:58.653Z",
+      "url": "http://cms.localhost:8080/api/media/file/cms-live-preview.webp",
+      "thumbnailURL": null,
+      "filename": "cms-live-preview.webp",
+      "mimeType": "image/webp",
+      "filesize": 78640,
+      "width": 1600,
+      "height": 1000
+    },
+    {
+      "id": 1,
+      "alt": "The CMS dashboard: the Portfolio and User Directory sites, each with its list of pages and a link to its settings.",
+      "updatedAt": "2026-11-27T22:57:58.644Z",
+      "createdAt": "2026-11-27T22:57:58.644Z",
+      "url": "http://cms.localhost:8080/api/media/file/cms-dashboard.webp",
+      "thumbnailURL": null,
+      "filename": "cms-dashboard.webp",
+      "mimeType": "image/webp",
+      "filesize": 33520,
+      "width": 1600,
+      "height": 1000
+    }
+  ],
+  "fetchedAt": "snapshot"
+}

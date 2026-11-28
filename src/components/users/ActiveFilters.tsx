@@ -1,8 +1,10 @@
 import { X } from "lucide-react";
-import { countryName } from "@/lib/countries";
+import { useUserOptions } from "@/hooks/useUserOptions";
 import { NO_FILTERS, type ListQuery } from "@/lib/listQuery";
-import { AGE_RANGES } from "@/lib/userOptions";
+import { ageRangeLabel } from "@/lib/userOptions";
 import type { QueryPatch } from "./UserToolbar";
+import { fill } from "@thebensage-dev/cms-client";
+import { useListText } from "./DirectoryText";
 
 type Tag = { label: string; remove: Parameters<QueryPatch>[0] };
 
@@ -13,12 +15,22 @@ export default function ActiveFilters({
   query: ListQuery;
   onChange: QueryPatch;
 }) {
+  const { countryName, ageRanges } = useUserOptions();
+  const { filters: text } = useListText();
   const tags: Tag[] = [];
   if (query.country) {
-    tags.push({ label: `Country: ${countryName(query.country)}`, remove: { country: null } });
+    tags.push({
+      label: fill(text.activeCountry, { value: countryName(query.country) }),
+      remove: { country: null },
+    });
   }
-  const range = AGE_RANGES.find((r) => r.value === query.age);
-  if (range) tags.push({ label: `Age: ${range.label}`, remove: { age: null } });
+  const range = ageRanges.find((r) => r.value === query.age);
+  if (range) {
+    tags.push({
+      label: fill(text.activeAge, { value: ageRangeLabel(range) }),
+      remove: { age: null },
+    });
+  }
   for (const interest of query.interests) {
     const rest = query.interests.filter((i) => i !== interest);
     tags.push({ label: interest, remove: { interests: rest.length ? rest : null } });
@@ -33,7 +45,7 @@ export default function ActiveFilters({
           key={t.label}
           type="button"
           onClick={() => onChange(t.remove)}
-          aria-label={`Remove filter ${t.label}`}
+          aria-label={fill(text.remove, { label: t.label })}
           className="filter-tag"
         >
           {t.label}
@@ -41,7 +53,7 @@ export default function ActiveFilters({
         </button>
       ))}
       <button type="button" onClick={() => onChange(NO_FILTERS)} className="link ml-1 text-xs">
-        Clear all
+        {text.clearAll}
       </button>
     </div>
   );

@@ -2,7 +2,8 @@
 
 import { LogIn, Mail, UserPlus } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { ACCESS_MAILTO, signInHref, type Access } from "@/lib/access";
+import { accessMailto, signInHref, type Access } from "@/lib/access";
+import { useDirectoryText } from "./DirectoryText";
 
 /**
  * Shown in the form when the server refuses a change: a signed-out visitor's, or one from someone
@@ -10,31 +11,31 @@ import { ACCESS_MAILTO, signInHref, type Access } from "@/lib/access";
  */
 export default function SignInRequired({ message, access }: { message: string; access: Access }) {
   const pathname = usePathname();
+  const { shared } = useDirectoryText();
+  const text = shared.access;
 
   return (
     <div role="alert" className="rounded-lg bg-danger-soft px-4 py-3 text-sm sm:col-span-2">
       <p className="font-medium text-danger-ink">{message}</p>
       <p className="mt-1 leading-relaxed text-foreground-muted">
-        {access.signedIn
-          ? "Everything you entered passed the checks, but your account doesn't have edit access yet. Ask for it and I'll approve it."
-          : "Everything you entered passed the checks, but visitors can't save changes. I'm happy to give you temporary access to try the rest."}
+        {access.signedIn ? text.memberRefused : text.visitorRefused}
       </p>
       <div className="mt-3 flex flex-wrap gap-2">
         {access.requestAccessUrl ? (
           <a href={access.requestAccessUrl} className="btn btn-secondary">
             <UserPlus className="size-4" />
-            {access.signedIn ? "Request edit access" : "Request access"}
+            {access.signedIn ? text.requestEditAccess : text.requestAccess}
           </a>
         ) : (
-          <a href={ACCESS_MAILTO} className="btn btn-secondary">
+          <a href={accessMailto(shared)} className="btn btn-secondary">
             <Mail className="size-4" />
-            Email me for access
+            {text.emailForAccess}
           </a>
         )}
         {access.canSignIn && !access.signedIn && (
           <a href={signInHref(pathname)} className="btn btn-primary">
             <LogIn className="size-4" />
-            Sign in
+            {text.signIn}
           </a>
         )}
       </div>

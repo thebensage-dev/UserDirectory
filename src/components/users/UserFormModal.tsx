@@ -3,7 +3,7 @@
 import clsx from "clsx";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { X } from "lucide-react";
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import {
   useForm,
   useWatch,
@@ -13,13 +13,14 @@ import {
 } from "react-hook-form";
 import { toast } from "sonner";
 import { Modal } from "@thebensage-dev/ui";
-import { COMMON_COUNTRIES, COUNTRIES, countryName } from "@/lib/countries";
-import { INTERESTS, MAX_INTERESTS } from "@/lib/userOptions";
+import { useUserOptions } from "@/hooks/useUserOptions";
 import { LIMITS, userSchema, type UserInput } from "@/lib/userSchema";
 import type { Access } from "@/lib/access";
 import { createUserAction, updateUserAction } from "@/server/userActions";
 import type { User } from "@/types";
 import SignInRequired from "./SignInRequired";
+import { fill } from "@thebensage-dev/cms-client";
+import { useDirectoryText } from "./DirectoryText";
 
 type UserFormModalProps = {
   isOpen: boolean;
@@ -36,7 +37,7 @@ const EMPTY: DefaultValues<UserInput> = {
   email: "",
   phone: "",
   // "" shows the "Select country" placeholder; validation rejects it.
-  country: "" as UserInput["country"],
+  country: "",
   city: "",
   jobTitle: "",
   bio: "",
@@ -48,11 +49,11 @@ const fromUser = (user: User): DefaultValues<UserInput> => ({
   email: user.email,
   phone: user.phone ?? "",
   age: user.age,
-  country: user.country as UserInput["country"],
+  country: user.country,
   city: user.city ?? "",
   jobTitle: user.jobTitle ?? "",
   bio: user.bio ?? "",
-  interests: user.interests as UserInput["interests"],
+  interests: user.interests,
 });
 
 export default function UserFormModal({
@@ -61,9 +62,14 @@ export default function UserFormModal({
   onClose,
   access = SIGNED_IN,
 }: UserFormModalProps) {
+  const { shared } = useDirectoryText();
+  const text = shared.form;
   const isEdit = !!user;
   const uid = useId();
   const titleId = `${uid}-title`;
+  const options = useUserOptions();
+  const { countryName, maxInterests } = options;
+  const schema = useMemo(() => userSchema(options), [options]);
 
   const {
     register,
@@ -73,7 +79,7 @@ export default function UserFormModal({
     reset,
     formState: { errors, isSubmitting },
   } = useForm<UserInput>({
-    resolver: zodResolver(userSchema),
+    resolver: zodResolver(schema),
     defaultValues: EMPTY,
     mode: "onTouched",
   });
@@ -93,10 +99,10 @@ export default function UserFormModal({
     ...register(name, options),
   });
 
-  const labelFor = (name: keyof UserInput, text: string, optional = false) => (
+  const labelFor = (name: keyof UserInput, label: string, optional = false) => (
     <label htmlFor={`${uid}-${name}`} className="label">
-      {text}
-      {optional && <span className="ml-1 font-normal text-foreground-muted">(optional)</span>}
+      {label}
+      {optional && <span className="ml-1 font-normal text-foreground-muted">{text.optional}</span>}
     </label>
   );
 
@@ -108,8 +114,8 @@ export default function UserFormModal({
     ) : null;
 
   const interestOptions = [
-    ...INTERESTS,
-    ...(user?.interests.filter((i) => !(INTERESTS as readonly string[]).includes(i)) ?? []),
+    ...options.interests,
+    ...(user?.interests.filter((i) => !options.interests.includes(i)) ?? []),
   ];
 
   const handleClose = () => {
@@ -134,9 +140,7 @@ export default function UserFormModal({
       return;
     }
     reset(EMPTY);
-    toast.success(
-      user ? `Saved changes to ${result.data.fullName}` : `Added ${result.data.fullName}`,
-    );
+    toast.success(fill(user ? text.saved : text.added, { name: result.data.fullName }));
     onClose();
   };
 
@@ -146,62 +150,61 @@ export default function UserFormModal({
         <div className="flex items-start justify-between gap-4 px-6 pt-6">
           <div>
             <h2 id={titleId} className="text-lg font-semibold">
-              {isEdit ? "Edit user" : "Add new user"}
+              {isEdit ? text.editTitle : text.addTitle}
             </h2>
             <p className="mt-1 text-sm text-foreground-muted">
-              {isEdit
-                ? `Update ${user.fullName}'s details.`
-                : "Fields marked optional can be filled in later."}
+              {isEdit ? fill(text.editIntro, { name: user.fullName }) : text.addIntro}
             </p>
-            {!access.canEdit && (
-              <p className="mt-2 text-sm text-primary-ink">
-                Try it out: every field is checked, but saving needs an account.
-              </p>
-            )}
+            {!access.canEdit && <p className="mt-2 text-sm text-primary-ink">{text.tryItOut}</p>}
           </div>
-          <button type="button" onClick={handleClose} aria-label="Close" className="icon-btn -m-1">
+          <button
+            type="button"
+            onClick={handleClose}
+            aria-label={text.close}
+            className="icon-btn -m-1"
+          >
             <X className="size-5" />
           </button>
         </div>
 
         <div className="grid grid-cols-1 gap-x-4 gap-y-5 p-6 sm:grid-cols-2">
           <div className="sm:col-span-2">
-            {labelFor("fullName", "Full name")}
+            {labelFor("fullName", text.fullName)}
             <input
               {...field("fullName")}
               autoComplete="off"
-              placeholder="e.g. Jane Doe"
+              placeholder={text.fullNamePlaceholder}
               className="input"
             />
             {errorFor("fullName")}
           </div>
 
           <div>
-            {labelFor("email", "Email")}
+            {labelFor("email", text.email)}
             <input
               {...field("email")}
               type="email"
               autoComplete="off"
-              placeholder="jane@example.com"
+              placeholder={text.emailPlaceholder}
               className="input"
             />
             {errorFor("email")}
           </div>
 
           <div>
-            {labelFor("phone", "Phone", true)}
+            {labelFor("phone", text.phone, true)}
             <input
               {...field("phone")}
               type="tel"
               autoComplete="off"
-              placeholder="+44 7700 900123"
+              placeholder={text.phonePlaceholder}
               className="input"
             />
             {errorFor("phone")}
           </div>
 
           <div>
-            {labelFor("age", "Age")}
+            {labelFor("age", text.age)}
             <input
               {...field("age", {
                 setValueAs: (v) => (v === "" || v == null ? undefined : Number(v)),
@@ -210,25 +213,25 @@ export default function UserFormModal({
               inputMode="numeric"
               min={18}
               max={120}
-              placeholder="18–120"
+              placeholder={text.agePlaceholder}
               className="input"
             />
             {errorFor("age")}
           </div>
 
           <div>
-            {labelFor("country", "Country")}
+            {labelFor("country", text.country)}
             <select {...field("country")} className="input">
-              <option value="">Select country</option>
-              <optgroup label="Common">
-                {COMMON_COUNTRIES.map((code) => (
+              <option value="">{text.selectCountry}</option>
+              <optgroup label={text.commonCountries}>
+                {(shared.commonCountries ?? []).map((code) => (
                   <option key={code} value={code}>
                     {countryName(code)}
                   </option>
                 ))}
               </optgroup>
-              <optgroup label="All countries">
-                {COUNTRIES.map(({ code, name }) => (
+              <optgroup label={text.allCountries}>
+                {options.countries.map(({ code, name }) => (
                   <option key={code} value={code}>
                     {name}
                   </option>
@@ -239,22 +242,22 @@ export default function UserFormModal({
           </div>
 
           <div>
-            {labelFor("city", "City", true)}
+            {labelFor("city", text.city, true)}
             <input
               {...field("city")}
               autoComplete="off"
-              placeholder="e.g. Manchester"
+              placeholder={text.cityPlaceholder}
               className="input"
             />
             {errorFor("city")}
           </div>
 
           <div>
-            {labelFor("jobTitle", "Job title", true)}
+            {labelFor("jobTitle", text.jobTitle, true)}
             <input
               {...field("jobTitle")}
               autoComplete="off"
-              placeholder="e.g. Product designer"
+              placeholder={text.jobTitlePlaceholder}
               className="input"
             />
             {errorFor("jobTitle")}
@@ -262,12 +265,12 @@ export default function UserFormModal({
 
           <fieldset className="sm:col-span-2" aria-describedby={`${uid}-interests-hint`}>
             <legend className="label flex w-full items-baseline justify-between">
-              Interests
+              {text.interests}
               <span
                 id={`${uid}-interests-hint`}
                 className="text-xs font-normal text-foreground-muted"
               >
-                {selected.length} of {MAX_INTERESTS} selected
+                {fill(text.interestsCount, { selected: selected.length, max: maxInterests })}
               </span>
             </legend>
             <div className="flex flex-wrap gap-2">
@@ -276,9 +279,7 @@ export default function UserFormModal({
                   <input
                     type="checkbox"
                     value={interest}
-                    disabled={
-                      selected.length >= MAX_INTERESTS && !selected.includes(interest as never)
-                    }
+                    disabled={selected.length >= maxInterests && !selected.includes(interest)}
                     {...register("interests")}
                     className="peer sr-only"
                   />
@@ -291,7 +292,7 @@ export default function UserFormModal({
 
           <div className="sm:col-span-2">
             <div className="flex items-baseline justify-between">
-              {labelFor("bio", "Bio", true)}
+              {labelFor("bio", text.bio, true)}
               <span
                 className={clsx(
                   "text-xs",
@@ -304,7 +305,7 @@ export default function UserFormModal({
             <textarea
               {...field("bio")}
               rows={3}
-              placeholder="A sentence or two about them"
+              placeholder={text.bioPlaceholder}
               className="input"
             />
             {errorFor("bio")}
@@ -325,16 +326,16 @@ export default function UserFormModal({
 
         <div className="sticky bottom-0 flex flex-col-reverse gap-2 border-t border-border bg-surface px-6 py-4 sm:flex-row sm:justify-end">
           <button type="button" onClick={handleClose} className="btn btn-secondary">
-            Cancel
+            {text.cancel}
           </button>
           <button type="submit" disabled={isSubmitting} className="btn btn-primary">
             {isEdit
               ? isSubmitting
-                ? "Saving…"
-                : "Save changes"
+                ? text.saving
+                : text.save
               : isSubmitting
-                ? "Adding…"
-                : "Add user"}
+                ? text.adding
+                : text.add}
           </button>
         </div>
       </form>

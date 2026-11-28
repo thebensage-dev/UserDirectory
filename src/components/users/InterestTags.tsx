@@ -4,14 +4,17 @@ import { normalise } from "@thebensage-dev/ui";
 export default function InterestTags({
   interests,
   terms = [],
+  label,
 }: {
   interests: string[];
   terms?: string[];
+  /** The list's name for screen readers (the CMS's "Interests"). */
+  label: string;
 }) {
   if (interests.length === 0) return null;
   const matches = (interest: string) => terms.some((t) => normalise(interest).includes(t));
   return (
-    <ul className="flex flex-wrap gap-1.5" aria-label="Interests">
+    <ul className="flex flex-wrap gap-1.5" aria-label={label}>
       {interests.map((interest) => (
         <li
           key={interest}

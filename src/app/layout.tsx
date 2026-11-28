@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
+import { cookies, draftMode } from "next/headers";
+import { connection } from "next/server";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Toaster } from "sonner";
 import clsx from "clsx";
@@ -13,24 +14,31 @@ import {
   THEME_COOKIE,
   SiteHeader,
   themeClass,
+  iconOrDot,
 } from "@thebensage-dev/ui";
-import { PathLink } from "@thebensage-dev/ui/next";
-import { Users } from "lucide-react";
+import { PathLink, PreviewBanner } from "@thebensage-dev/ui/next";
 import { fontVariables } from "@/app/fonts";
+import RefreshOnSave from "@/components/layout/RefreshOnSave";
 import SiteFooter from "@/components/layout/SiteFooter";
+import DirectoryTextProvider from "@/components/users/DirectoryText";
 import { mainSiteUrl } from "@/lib/mainSite";
 import { signInHref } from "@/lib/access";
 import { accountUrl, authConfigured, currentUser } from "@/server/auth";
+import { cmsPublicUrl, directoryPaths, getContent, resolveLink } from "@/server/cms";
 import "./globals.css";
 
-export const metadata: Metadata = {
-  title: { default: "User Directory", template: "%s · User Directory" },
-  description:
-    "A searchable people directory built with Next.js and React, on a .NET API with PostgreSQL.",
-  icons: { icon: { url: "/icon.svg", type: "image/svg+xml" } },
-  // Kept out of search results (also sent as X-Robots-Tag, see next.config.ts).
-  robots: { index: false, follow: false },
-};
+// The name and description come from the CMS (User Directory settings).
+export async function generateMetadata(): Promise<Metadata> {
+  await connection(); // From the CMS at request time, not baked in at build.
+  const { name, description } = (await getContent()).settings;
+  return {
+    title: { default: name, template: `%s · ${name}` },
+    description,
+    icons: { icon: { url: "/icon.svg", type: "image/svg+xml" } },
+    // Kept out of search results (also sent as X-Robots-Tag, see next.config.ts).
+    robots: { index: false, follow: false },
+  };
+}
 
 const toastColours = {
   "--normal-bg": "var(--foreground)",
@@ -46,28 +54,73 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const user = await currentUser();
   const account = accountUrl();
   const mainSite = mainSiteUrl();
+  // The header's name, links and labels come from the CMS (User Directory settings, Header tab).
+  const content = await getContent();
+  const { settings } = content;
+  const nav = (settings.header?.nav ?? []).flatMap((item) => {
+    const link = resolveLink(content, item.link);
+    if (!link) return [];
+    return [
+      {
+        label: item.label,
+        href: link.href,
+        icon: iconOrDot(item.icon),
+        ...(item.wideOnly && { wideOnly: true }),
+        ...(link.external && { external: true }),
+      },
+    ];
+  });
+  const labels = settings.header?.labels;
+  const paths = directoryPaths(content);
+  const ui = settings.interface;
+  const previewing = (await draftMode()).isEnabled;
+  const cmsUrl = cmsPublicUrl();
 
   return (
     <html lang="en" className={clsx(fontVariables, themeClass(theme))} {...colourAttrs(colours)}>
       <body className="flex min-h-screen flex-col">
+        {previewing && cmsUrl && <RefreshOnSave cmsUrl={cmsUrl} />}
+        {previewing && (
+          <PreviewBanner label={settings.preview.label} exit={settings.preview.exit} />
+        )}
         <NuqsAdapter>
           <SiteHeader
-            brand={{ name: "User Directory", href: "/" }}
-            nav={[{ label: "Directory", href: "/users", icon: Users }]}
+            brand={{ name: settings.name, href: "/" }}
+            nav={nav}
             theme={theme}
             cookieDomain={preferenceCookieDomain(mainSite)}
             user={user}
             accountHref={account}
-            signInHref={authConfigured() ? signInHref("/users") : undefined}
-            labels={{ account: "Your account: name, email and password" }}
+            signInHref={authConfigured() ? signInHref(paths.list) : undefined}
+            labels={{
+              ...ui.header,
+              ...(labels?.signIn && { signIn: labels.signIn }),
+              ...(labels?.signOut && { signOut: labels.signOut }),
+              ...(labels?.account && { account: labels.account }),
+              ...(labels?.theme && { theme: labels.theme }),
+            }}
             linkComponent={PathLink}
             sticky
           />
-          <div className="flex-1">{children}</div>
+          {/* Every word of the directory (forms, dialogs, notices) and where its pages are, for the
+              client components on any page. */}
+          <DirectoryTextProvider value={{ shared: settings.directory, paths }}>
+            <div className="flex-1">{children}</div>
+          </DirectoryTextProvider>
           <SiteFooter />
         </NuqsAdapter>
         <Toaster position="bottom-center" style={toastColours} />
-        <CookieNotice policyHref={mainSite && `${mainSite}/privacy#cookies`} />
+        <CookieNotice
+          policyHref={mainSite && `${mainSite}/privacy#cookies`}
+          labels={{
+            region: ui.cookies.region,
+            title: ui.cookies.title,
+            dismiss: ui.cookies.dismiss,
+            details: ui.cookies.details,
+          }}
+        >
+          {ui.cookies.body}
+        </CookieNotice>
       </body>
     </html>
   );

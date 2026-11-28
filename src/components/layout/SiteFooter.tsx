@@ -1,43 +1,41 @@
-import { Footer, type FooterLink } from "@thebensage-dev/ui";
-import { mainSiteUrl } from "@/lib/mainSite";
+import { Footer, type FooterLink, iconByName } from "@thebensage-dev/ui";
+import { getContent, resolveLink, type CmsLink, type Content } from "@/server/cms";
 
-const OWNER = "TheBensage";
-/** This app's source code (the repo must be public). */
-const GITHUB_URL = "https://github.com/thebensage-dev/UserDirectory";
+type LinkRow = { label: string; icon?: string | null; link: CmsLink };
 
-/**
- * Footer for every page. The privacy notice and terms live on the main site (MAIN_SITE_URL, read
- * at request time); without it, those links are left out.
- */
-export default function SiteFooter() {
-  const mainSite = mainSiteUrl();
-  const more: FooterLink[] = [{ label: "Source code", href: GITHUB_URL, external: true }];
-  if (mainSite) more.unshift({ label: "Portfolio", href: mainSite });
+/** The CMS's footer links. A main-site link (privacy, terms, Portfolio) is left out while
+ *  MAIN_SITE_URL is unset. */
+function footerLinks(content: Content, rows: LinkRow[] | null | undefined): FooterLink[] {
+  return (rows ?? []).flatMap((row) => {
+    const link = resolveLink(content, row.link);
+    if (!link) return [];
+    const Icon = iconByName(row.icon);
+    return [
+      {
+        label: row.label,
+        href: link.href,
+        ...(Icon && { icon: Icon }),
+        ...(link.external && { external: true }),
+      },
+    ];
+  });
+}
 
+/** Footer for every page (the CMS's User Directory settings, Footer tab). */
+export default async function SiteFooter() {
+  const content = await getContent();
+  const { name, footer } = content.settings;
   return (
     <Footer
-      brand={{ name: "User Directory", href: "/" }}
-      tagline={`A demo of server-rendered search, filtering and editing, part of ${OWNER}'s portfolio.`}
-      owner={OWNER}
-      groups={[
-        {
-          title: "Directory",
-          links: [
-            { label: "Overview", href: "/" },
-            { label: "Browse people", href: "/users" },
-          ],
-        },
-        { title: `More from ${OWNER}`, links: more },
-      ]}
-      legal={
-        mainSite
-          ? [
-              { label: "Privacy", href: `${mainSite}/privacy` },
-              { label: "Cookies", href: `${mainSite}/privacy#cookies` },
-              { label: "Terms", href: `${mainSite}/terms` },
-            ]
-          : []
-      }
+      brand={{ name, href: "/" }}
+      tagline={footer.tagline}
+      {...(footer.owner && { owner: footer.owner })}
+      groups={(footer.groups ?? []).map((group) => ({
+        title: group.title,
+        links: footerLinks(content, group.links),
+      }))}
+      legal={footerLinks(content, footer.legal)}
+      labels={content.settings.interface.footer}
     />
   );
 }

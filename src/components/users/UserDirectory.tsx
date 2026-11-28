@@ -3,13 +3,16 @@
 import clsx from "clsx";
 import { Plus, SearchX, Users } from "lucide-react";
 import { useQueryStates } from "nuqs";
-import { useCallback, useRef, useState, useTransition } from "react";
+import { useCallback, useMemo, useRef, useState, useTransition } from "react";
 import { EmptyState, Pagination, useShortcut } from "@thebensage-dev/ui";
+import { useUserOptions } from "@/hooks/useUserOptions";
 import { NO_FILTERS, PAGE_SIZES, listQueryParsers } from "@/lib/listQuery";
 import { saveView, type View } from "@/lib/preferences";
 import type { Access } from "@/lib/access";
 import type { DirectorySummary, User, UserPage } from "@/types";
+import { fill } from "@thebensage-dev/cms-client";
 import AccessNotice from "./AccessNotice";
+import { useListText } from "./DirectoryText";
 import DeleteUserDialog from "./DeleteUserDialog";
 import UserCards from "./UserCards";
 import UserFormModal from "./UserFormModal";
@@ -31,8 +34,11 @@ export default function UserDirectory({
   /** Just back from authentik's "Request access" page. */
   accessRequested?: boolean;
 }) {
+  const text = useListText();
   const [isPending, startTransition] = useTransition();
-  const [query, setQuery] = useQueryStates(listQueryParsers, { shallow: false, startTransition });
+  const options = useUserOptions();
+  const parsers = useMemo(() => listQueryParsers(options), [options]);
+  const [query, setQuery] = useQueryStates(parsers, { shallow: false, startTransition });
   const [view, setView] = useState(initialView);
 
   /** undefined = form closed, null = adding, User = editing. */
@@ -70,21 +76,19 @@ export default function UserDirectory({
   const searchText = query.q.trim();
 
   return (
-    <main className="mx-auto w-full max-w-5xl px-4 pt-8 pb-section sm:px-6">
+    <>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="title-page">Users</h1>
-          <p className="mt-1 text-sm text-foreground-muted">
-            Browse, add and manage everyone in one place.
-          </p>
+          <h1 className="title-page">{text.heading.title}</h1>
+          <p className="mt-1 text-sm text-foreground-muted">{text.heading.intro}</p>
         </div>
         <button
           onClick={openAdd}
           className="btn btn-primary self-start sm:self-auto"
-          title="Add user (N)"
+          title={text.heading.addHint}
         >
           <Plus className="size-4" />
-          Add user
+          {text.heading.add}
         </button>
       </div>
 
@@ -94,19 +98,19 @@ export default function UserDirectory({
 
       <div ref={listTopRef} className="scroll-mt-20" />
 
-      {summary.people === 0 ? (
+      {summary.users === 0 ? (
         <div className="mt-content">
           <EmptyState
             icon={Users}
-            title="No users yet"
+            title={text.empty.noUsersTitle}
             action={
               <button onClick={openAdd} className="btn btn-primary">
                 <Plus className="size-4" />
-                Add user
+                {text.heading.add}
               </button>
             }
           >
-            Add your first user to get started.
+            {text.empty.noUsersBody}
           </EmptyState>
         </div>
       ) : (
@@ -130,7 +134,9 @@ export default function UserDirectory({
                 icon={SearchX}
                 tone="accent"
                 title={
-                  searchText ? `No one matches “${searchText}”` : "No one matches these filters"
+                  searchText
+                    ? fill(text.empty.noMatchSearch, { search: searchText })
+                    : text.empty.noMatchFilters
                 }
                 action={
                   <button
@@ -138,11 +144,11 @@ export default function UserDirectory({
                     onClick={() => update({ q: null, ...NO_FILTERS })}
                     className="btn btn-secondary"
                   >
-                    Clear search and filters
+                    {text.empty.clear}
                   </button>
                 }
               >
-                Try fewer words, a different spelling, or removing a filter.
+                {text.empty.noMatchBody}
               </EmptyState>
             ) : (
               <>
@@ -167,6 +173,7 @@ export default function UserDirectory({
                   pageSizes={PAGE_SIZES}
                   onPageChange={goToPage}
                   onPageSizeChange={(size) => update({ size: size as (typeof PAGE_SIZES)[number] })}
+                  labels={text.pagination}
                 />
               </>
             )}
@@ -181,6 +188,6 @@ export default function UserDirectory({
         access={access}
       />
       <DeleteUserDialog user={deleting} onClose={() => setDeleting(null)} />
-    </main>
+    </>
   );
 }

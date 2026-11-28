@@ -1,9 +1,7 @@
-import { countryName } from "@/lib/countries";
-
-export default function CountryLabel({ code }: { code: string }) {
+export default function CountryLabel({ code, name }: { code: string; name: string }) {
   return (
     <span className="inline-flex items-center gap-1.5">
-      {countryName(code)}
+      {name}
       <span className="code-badge">{code}</span>
     </span>
   );

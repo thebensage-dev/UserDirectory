@@ -9,11 +9,11 @@ import { SESSION_COOKIE, SSO_CHECKED_COOKIE } from "@/lib/authCookies";
 // Sign-in through authentik (OpenID Connect, authorization code + PKCE). Browsing is public.
 // Any authentik account can sign in (single sign-on across the apps); adding, editing and
 // deleting need the user-directory-editors group (or authentik Admins), read from the token's
-// `groups` claim. Someone signed in without it sees "request edit access". The People API checks
+// `groups` claim. Someone signed in without it sees "request edit access". The API checks
 // the same groups on every write.
 //
 // The session is an encrypted cookie (no session table). It holds the user's name and email,
-// for the header, and authentik's access and refresh tokens: the People API, which holds the
+// for the header, and authentik's access and refresh tokens: the API, which holds the
 // data, accepts this app's access tokens for writes. accessToken() refreshes an expiring one.
 //
 // Single sign-on: someone already signed in to authentik (in another app, say) is signed in here
@@ -85,13 +85,14 @@ export function authConfigured(): boolean {
   return readEnv() !== null;
 }
 
-/** authentik's shared "Request access" page (blueprint flow `request-access`), this app ticked. */
-const REQUEST_ACCESS_PATH = "/if/flow/request-access/?app=user-directory";
+/** One of authentik's blueprint flows (shared by every app), opened for this app. */
+const flowUrl = (env: AuthEnv, flow: "account" | "request-access" | "sign-out") =>
+  new URL(`/if/flow/${flow}/?app=user-directory`, env.issuer).href;
 
-/** authentik's "Your account" page (blueprint flow `account`): name, email and password. */
+/** authentik's "Your account" page: name, email and password. */
 export function accountUrl(): string | null {
   const env = readEnv();
-  return env ? new URL("/if/flow/account/?app=user-directory", env.issuer).href : null;
+  return env ? flowUrl(env, "account") : null;
 }
 
 /** What the pages pass to the client about signing in and asking for an account. */
@@ -102,7 +103,7 @@ export async function pageAccess(): Promise<Access> {
     signedIn: user !== null,
     canEdit: user?.canEdit ?? false,
     canSignIn: env !== null,
-    requestAccessUrl: env ? new URL(REQUEST_ACCESS_PATH, env.issuer).href : undefined,
+    requestAccessUrl: env ? flowUrl(env, "request-access") : undefined,
   };
 }
 
@@ -312,7 +313,7 @@ export async function currentUser(): Promise<SessionUser | null> {
 }
 
 /**
- * The signed-in person's access token for the People API, or null when nobody is signed in.
+ * The signed-in person's access token for the API, or null when nobody is signed in.
  * Refreshes it first when it's about to expire, which rewrites the session cookie, so call it
  * only from Server Actions and route handlers. A failed refresh (revoked in authentik, say)
  * signs the person out here.
@@ -339,9 +340,11 @@ export async function accessToken(): Promise<string | null> {
     };
     // authentik may not rotate the refresh token; keep the old one then.
     refreshed.refreshToken ??= session.refreshToken;
-    jar.set(SESSION_COOKIE, await seal(refreshed, end, env.secret), {
-      ...cookieOptions(env, Math.max(0, end - nowSeconds())),
-    });
+    jar.set(
+      SESSION_COOKIE,
+      await seal(refreshed, end, env.secret),
+      cookieOptions(env, Math.max(0, end - nowSeconds())),
+    );
     return refreshed.accessToken;
   } catch {
     jar.delete(SESSION_COOKIE);
@@ -357,7 +360,7 @@ export async function accessToken(): Promise<string | null> {
 export async function signOut(): Promise<string> {
   (await cookies()).delete(SESSION_COOKIE);
   const env = readEnv();
-  return env ? new URL("/if/flow/sign-out/?app=user-directory", env.issuer).href : "/users";
+  return env ? flowUrl(env, "sign-out") : "/users";
 }
 
 /**

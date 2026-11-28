@@ -1,6 +1,5 @@
 import { z } from "zod";
-import { COUNTRY_CODES } from "@/lib/countries";
-import { INTERESTS, MAX_INTERESTS } from "@/lib/userOptions";
+import type { UserOptions } from "@/lib/userOptions";
 
 export const LIMITS = {
   name: 80,
@@ -16,7 +15,7 @@ const PHONE_PATTERN = /^\+?[\d\s().-]+$/;
 const optionalText = (max: number, label: string) =>
   z.string().trim().max(max, `${label} must be ${max} characters or fewer`);
 
-export const userSchema = z.object({
+const fixedRules = z.object({
   fullName: z
     .string()
     .trim()
@@ -52,18 +51,28 @@ export const userSchema = z.object({
     .min(18, "Must be 18 or over")
     .max(120, "Must be 120 or under"),
 
-  country: z.enum(COUNTRY_CODES, { error: "Choose a country" }),
-
   city: optionalText(LIMITS.city, "City"),
   jobTitle: optionalText(LIMITS.jobTitle, "Job title"),
   bio: optionalText(LIMITS.bio, "Bio"),
-
-  interests: z
-    .array(z.enum(INTERESTS, { error: "Unknown interest" }), {
-      error: "Pick at least one interest",
-    })
-    .min(1, "Pick at least one interest")
-    .max(MAX_INTERESTS, `Pick up to ${MAX_INTERESTS} interests`),
 });
 
-export type UserInput = z.infer<typeof userSchema>;
+// z.enum needs at least one value; the API always sends some.
+const oneOf = (values: string[]) => values as [string, ...string[]];
+
+/** All the rules, with the countries and interests the API allows (`GET /users/options`). */
+export const userSchema = ({
+  countries,
+  interests,
+  maxInterests,
+}: Pick<UserOptions, "countries" | "interests" | "maxInterests">) =>
+  fixedRules.extend({
+    country: z.enum(oneOf(countries.map((c) => c.code)), { error: "Choose a country" }),
+    interests: z
+      .array(z.enum(oneOf(interests), { error: "Unknown interest" }), {
+        error: "Pick at least one interest",
+      })
+      .min(1, "Pick at least one interest")
+      .max(maxInterests, `Pick up to ${maxInterests} interests`),
+  });
+
+export type UserInput = z.infer<ReturnType<typeof userSchema>>;

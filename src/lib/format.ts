@@ -1,14 +1,10 @@
-import { countryName } from "@/lib/countries";
 import type { User } from "@/types";
 
-export function formatLocation(user: Pick<User, "city" | "country">) {
-  const country = countryName(user.country);
-  return user.city ? `${user.city}, ${country}` : country;
-}
+export const formatLocation = (
+  user: Pick<User, "city" | "country">,
+  countryName: (code: string) => string,
+) => [user.city, countryName(user.country)].filter(Boolean).join(", ");
 
 const dateFormat = new Intl.DateTimeFormat("en-GB", { dateStyle: "medium" });
 
 export const formatDate = (iso: string) => dateFormat.format(new Date(iso));
-
-export const pluralise = (count: number, one: string, many: string) =>
-  `${count} ${count === 1 ? one : many}`;

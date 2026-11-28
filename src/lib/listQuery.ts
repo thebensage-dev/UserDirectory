@@ -7,25 +7,26 @@ import {
   parseAsStringLiteral,
   type inferParserType,
 } from "nuqs/server";
-import { COUNTRY_CODES } from "@/lib/countries";
-import { AGE_RANGES } from "@/lib/userOptions";
+import type { UserOptions } from "@/lib/userOptions";
 
-export const SORT_LABELS = {
-  "id-desc": "Recently added",
-  "id-asc": "First added",
-  "name-asc": "Name (A–Z)",
-  "name-desc": "Name (Z–A)",
-  "age-asc": "Age (youngest)",
-  "age-desc": "Age (oldest)",
-  "country-asc": "Country (A–Z)",
-  "country-desc": "Country (Z–A)",
+/** Each sort order the API offers, and the field holding its label in the CMS (the user
+ *  directory block's Sort orders). */
+export const SORT_FIELDS = {
+  "id-desc": "idDesc",
+  "id-asc": "idAsc",
+  "name-asc": "nameAsc",
+  "name-desc": "nameDesc",
+  "age-asc": "ageAsc",
+  "age-desc": "ageDesc",
+  "country-asc": "countryAsc",
+  "country-desc": "countryDesc",
 } as const;
 
-export type SortValue = keyof typeof SORT_LABELS;
+export type SortValue = keyof typeof SORT_FIELDS;
 export type SortColumn = "id" | "name" | "age" | "country";
 type SortDir = "asc" | "desc";
 
-const SORT_VALUES = Object.keys(SORT_LABELS) as SortValue[];
+const SORT_VALUES = Object.keys(SORT_FIELDS) as SortValue[];
 
 export const parseSortValue = (value: SortValue) => {
   const [column, dir] = value.split("-") as [SortColumn, SortDir];
@@ -34,20 +35,23 @@ export const parseSortValue = (value: SortValue) => {
 
 export const PAGE_SIZES = [12, 24, 48] as const;
 
-export const listQueryParsers = {
+type Filters = Pick<UserOptions, "countries" | "ageRanges">;
+
+/** The list's URL parameters. Unknown countries and age ranges read as "any". */
+export const listQueryParsers = ({ countries, ageRanges }: Filters) => ({
   q: parseAsString.withDefault(""),
-  country: parseAsStringLiteral(COUNTRY_CODES),
-  age: parseAsStringLiteral(AGE_RANGES.map((r) => r.value)),
+  country: parseAsStringLiteral(countries.map((c) => c.code)),
+  age: parseAsStringLiteral(ageRanges.map((r) => r.value)),
   interests: parseAsArrayOf(parseAsString).withDefault([]),
   /** null = automatic: best match while searching, otherwise newest first. */
   sort: parseAsStringLiteral(SORT_VALUES),
   page: parseAsInteger.withDefault(1),
   size: parseAsNumberLiteral(PAGE_SIZES).withDefault(PAGE_SIZES[0]),
-};
+});
 
-export type ListQuery = inferParserType<typeof listQueryParsers>;
+export type ListQuery = inferParserType<ReturnType<typeof listQueryParsers>>;
 
-export const loadListQuery = createLoader(listQueryParsers);
+export const loadListQuery = (options: Filters) => createLoader(listQueryParsers(options));
 
 export const NO_FILTERS = { country: null, age: null, interests: null } as const;
 

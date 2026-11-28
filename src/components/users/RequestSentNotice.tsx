@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useId, useState } from "react";
 import { Modal } from "@thebensage-dev/ui";
 import { ACCESS_REQUESTED_PARAM } from "@/lib/access";
+import { useDirectoryText } from "./DirectoryText";
 
 /**
  * The dialog people see when authentik's "Request access" page sends them back to
@@ -12,6 +13,7 @@ import { ACCESS_REQUESTED_PARAM } from "@/lib/access";
  */
 export default function RequestSentNotice() {
   const [open, setOpen] = useState(true);
+  const text = useDirectoryText().shared.requestSent;
   const titleId = useId();
   const router = useRouter();
   const pathname = usePathname();
@@ -32,15 +34,11 @@ export default function RequestSentNotice() {
           <CircleCheck className="size-7 text-primary-ink" aria-hidden />
         </span>
         <h2 id={titleId} className="mt-4 text-xl font-semibold">
-          Request sent
+          {text.title}
         </h2>
-        <p className="mt-2 leading-relaxed text-foreground-muted">
-          Thanks for asking. I&apos;ve been notified and will look at it soon. Your account already
-          works across the site; once editing is approved you&apos;ll get an email, and you can make
-          changes here.
-        </p>
+        <p className="mt-2 leading-relaxed text-foreground-muted">{text.body}</p>
         <button type="button" onClick={close} className="btn btn-primary mt-6 w-full" autoFocus>
-          Got it
+          {text.button}
         </button>
       </div>
     </Modal>

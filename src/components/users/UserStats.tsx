@@ -1,15 +1,19 @@
+"use client";
+
+import { useListText } from "./DirectoryText";
 import clsx from "clsx";
 import { toneAt, toneClass } from "@thebensage-dev/ui";
 import type { DirectorySummary } from "@/types";
 
 export default function UserStats({ summary }: { summary: DirectorySummary }) {
-  if (summary.people === 0) return null;
+  const { stats: text } = useListText();
+  if (summary.users === 0) return null;
 
   const stats = [
-    { label: "People", value: summary.people },
-    { label: "Average age", value: summary.averageAge },
-    { label: "Countries", value: summary.countries.length },
-    { label: "Top interest", value: summary.interests[0]?.[0] ?? "—" },
+    { label: text.users, value: summary.users },
+    { label: text.averageAge, value: summary.averageAge },
+    { label: text.countries, value: summary.countries.length },
+    { label: text.topInterest, value: summary.interests[0]?.[0] ?? "—" },
   ];
 
   return (

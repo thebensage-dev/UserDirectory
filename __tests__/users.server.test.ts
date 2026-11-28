@@ -1,16 +1,21 @@
 // @vitest-environment node
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { DEFAULT_LIST_QUERY, makeUser } from "./fixtures";
+import { DEFAULT_LIST_QUERY, OPTIONS, makeUser } from "./fixtures";
 import type { ListQuery } from "@/lib/listQuery";
 import type { UserInput } from "@/lib/userSchema";
 import { accessToken, currentUser } from "@/server/auth";
 import { createUserAction, deleteUserAction, updateUserAction } from "@/server/userActions";
 import { ApiError, getDirectorySummary, getUser, queryUsers } from "@/server/users";
 
-// The People API holds the data and has its own tests for search, filters and SQL. These check
+// The API holds the data and has its own tests for search, filters and SQL. These check
 // what this app does with it: the requests it sends and how it reads the answers.
 
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
+// The refusals are worded in the CMS; the tests read the snapshot.
+vi.mock("@/server/cms", async () => {
+  const { CONTENT } = await import("./fixtures");
+  return { getContent: async () => CONTENT };
+});
 // The actions need an editor's token; tests are signed in as an editor unless they say otherwise.
 const EDITOR = { sub: "u1", name: "Ed", email: "ed@example.com", canEdit: true };
 vi.mock("@/server/auth", () => ({
@@ -18,9 +23,14 @@ vi.mock("@/server/auth", () => ({
   currentUser: vi.fn(async () => EDITOR),
 }));
 
+// The options (GET /users/options) are always answered; fetchMock sees every other request.
 const fetchMock = vi.fn<typeof fetch>();
+const fetchStub = async (input: RequestInfo | URL, init?: RequestInit) =>
+  new URL((input as Request).url).pathname === "/users/options"
+    ? json(200, OPTIONS)
+    : fetchMock(input, init);
 beforeEach(() => {
-  vi.stubGlobal("fetch", fetchMock);
+  vi.stubGlobal("fetch", fetchStub);
   vi.mocked(accessToken).mockResolvedValue("token-123");
   vi.mocked(currentUser).mockResolvedValue(EDITOR);
 });
@@ -72,7 +82,7 @@ describe("reads", () => {
     );
 
     const { url, request, headers } = lastRequest();
-    expect(url.origin + url.pathname).toBe("http://api.test/people");
+    expect(url.origin + url.pathname).toBe("http://api.test/users");
     expect(url.searchParams.getAll("interests")).toEqual(["Art", "Books"]);
     expect(Object.fromEntries(url.searchParams)).toMatchObject({
       q: "Ada",
@@ -99,14 +109,14 @@ describe("reads", () => {
   it("turns the summary's objects into [key, count] pairs", async () => {
     fetchMock.mockResolvedValue(
       json(200, {
-        people: 3,
+        users: 3,
         averageAge: 30.6,
-        countries: [{ code: "GB", name: "United Kingdom", people: 2 }],
-        interests: [{ name: "Coding", people: 2 }],
+        countries: [{ code: "GB", name: "United Kingdom", users: 2 }],
+        interests: [{ name: "Coding", users: 2 }],
       }),
     );
     expect(await getDirectorySummary()).toEqual({
-      people: 3,
+      users: 3,
       averageAge: 31,
       countries: [["GB", 2]],
       interests: [["Coding", 2]],
@@ -116,7 +126,7 @@ describe("reads", () => {
   it("returns null for an unknown id, and doesn't ask for an impossible one", async () => {
     fetchMock.mockResolvedValue(problem(404, { title: "That person doesn't exist." }));
     expect(await getUser(999_999)).toBeNull();
-    expect(lastRequest().url.pathname).toBe("/people/999999");
+    expect(lastRequest().url.pathname).toBe("/users/999999");
 
     fetchMock.mockClear();
     for (const id of [Number.NaN, 0, -1, 1.5, 3_000_000_000]) expect(await getUser(id)).toBeNull();
@@ -145,12 +155,12 @@ describe("Server Actions", () => {
       data: { fullName: "Ada King" },
     });
     request = lastRequest();
-    expect([request.request.method, request.url.pathname]).toEqual(["PUT", "/people/7"]);
+    expect([request.request.method, request.url.pathname]).toEqual(["PUT", "/users/7"]);
 
     fetchMock.mockResolvedValueOnce(new Response(null, { status: 204 }));
     expect(await deleteUserAction(7)).toEqual({ ok: true, data: null });
     request = lastRequest();
-    expect([request.request.method, request.url.pathname]).toEqual(["DELETE", "/people/7"]);
+    expect([request.request.method, request.url.pathname]).toEqual(["DELETE", "/users/7"]);
   });
 
   it("validates first, so invalid input never reaches the API", async () => {
@@ -189,7 +199,7 @@ describe("Server Actions", () => {
 
   const refused = { ok: false, error: "Please sign in to make changes.", signInRequired: true };
 
-  it("refuses every change when nobody is signed in, without calling the API", async () => {
+  it("refuses every change when nobody is signed in, before any write reaches the API", async () => {
     vi.mocked(currentUser).mockResolvedValue(null);
     expect(await createUserAction(input())).toEqual(refused);
     expect(await updateUserAction(7, input())).toEqual(refused);
@@ -197,7 +207,7 @@ describe("Server Actions", () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it("refuses people signed in without edit access, without calling the API", async () => {
+  it("refuses people signed in without edit access, before any write reaches the API", async () => {
     vi.mocked(currentUser).mockResolvedValue({ ...EDITOR, canEdit: false });
     const noAccess = {
       ok: false,

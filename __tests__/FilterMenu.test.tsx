@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import ActiveFilters from "@/components/users/ActiveFilters";
 import FilterMenu from "@/components/users/FilterMenu";
-import { DEFAULT_LIST_QUERY, makeSummary } from "./fixtures";
+import { DEFAULT_LIST_QUERY, makeSummary, withOptions } from "./fixtures";
 
 const openMenu = () => {
   const onChange = vi.fn();
@@ -13,6 +13,7 @@ const openMenu = () => {
       onChange={onChange}
       resultCount={2}
     />,
+    withOptions,
   );
   fireEvent.click(screen.getByRole("button", { name: /Filters/ }));
   return onChange;
@@ -30,7 +31,7 @@ describe("FilterMenu", () => {
     fireEvent.click(screen.getByRole("button", { name: /Coding/ }));
     expect(onChange).toHaveBeenLastCalledWith({ interests: ["Coding"] });
 
-    expect(screen.getByRole("button", { name: "Show 2 people" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Show 2 users" })).toBeInTheDocument();
     fireEvent.keyDown(document, { key: "Escape" });
     expect(screen.queryByRole("dialog", { name: "Filters" })).not.toBeInTheDocument();
   });
@@ -53,6 +54,7 @@ describe("FilterMenu", () => {
         onChange={vi.fn()}
         resultCount={1}
       />,
+      withOptions,
     );
     expect(screen.getByRole("button", { name: /Filters/ })).toHaveTextContent("2");
   });
@@ -71,6 +73,7 @@ describe("ActiveFilters", () => {
         }}
         onChange={onChange}
       />,
+      withOptions,
     );
 
     fireEvent.click(screen.getByRole("button", { name: "Remove filter Country: United Kingdom" }));
@@ -82,7 +85,10 @@ describe("ActiveFilters", () => {
   });
 
   it("renders nothing with no filters", () => {
-    const { container } = render(<ActiveFilters query={DEFAULT_LIST_QUERY} onChange={vi.fn()} />);
+    const { container } = render(
+      <ActiveFilters query={DEFAULT_LIST_QUERY} onChange={vi.fn()} />,
+      withOptions,
+    );
     expect(container).toBeEmptyDOMElement();
   });
 });

@@ -4,11 +4,8 @@ import type { NextConfig } from "next";
 // The CSP leaves scripts and styles alone (Next.js inlines both); it only blocks
 // framing, plugins, <base> hijacking and form posts to other sites.
 const securityHeaders = [
-  {
-    key: "Content-Security-Policy",
-    value: "frame-ancestors 'none'; base-uri 'self'; object-src 'none'; form-action 'self'",
-  },
-  { key: "X-Frame-Options", value: "DENY" },
+  // Content-Security-Policy and X-Frame-Options (no framing, except by the CMS while previewing)
+  // are set per request in src/proxy.ts.
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=()" },

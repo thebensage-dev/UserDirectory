@@ -173,8 +173,12 @@ jobs:
       APP_ENV_OIDC_CLIENT_ID: user-directory
       APP_ENV_OIDC_CLIENT_SECRET: derive:user-directory-oidc
       APP_ENV_AUTH_SECRET: derive:user-directory-session
-      # The People API (the Api repo), which holds the data.
+      # The API (the Api repo), which holds the users.
       APP_ENV_API_URL: https://api.${{ vars.DOMAIN }}
+      # Every page and word: the CMS (Payload), read over its public REST API.
+      APP_ENV_CMS_URL: https://cms.${{ vars.DOMAIN }}
+      # Draft preview from the CMS's Preview button (the same derived value as the CMS's).
+      APP_ENV_PREVIEW_SECRET: derive:cms-preview
     steps:
       - name: Check the deploy secrets are set
         id: secrets

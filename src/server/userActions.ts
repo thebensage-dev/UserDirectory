@@ -5,6 +5,7 @@ import { z } from "zod";
 import { userSchema } from "@/lib/userSchema";
 import type { ActionResult, User } from "@/types";
 import { accessToken, currentUser } from "./auth";
+import { getContent } from "./cms";
 import {
   DuplicateEmailError,
   ForbiddenError,
@@ -12,101 +13,111 @@ import {
   ValidationError,
   createUser,
   deleteUser,
+  getUserOptions,
+  isId,
   updateUser,
 } from "./users";
 
-const NOT_FOUND: ActionResult<never> = { ok: false, error: "That user no longer exists." };
-const SIGN_IN_REQUIRED: ActionResult<never> = {
+/** The refusals' wording, from the CMS (User Directory settings, Directory tab). */
+async function refusals() {
+  return (await getContent()).settings.directory.refusals;
+}
+type Refusals = Awaited<ReturnType<typeof refusals>>;
+
+const notFound = (text: Refusals): ActionResult<never> => ({ ok: false, error: text.notFound });
+const signInRequired = (text: Refusals): ActionResult<never> => ({
   ok: false,
-  error: "Please sign in to make changes.",
+  error: text.signInRequired,
   signInRequired: true,
-};
+});
 // Signed in (single sign-on from another app, say) without edit access. Same flag, so the forms
 // show the "request access" box; it words itself for signed-in people.
-const EDIT_ACCESS_REQUIRED: ActionResult<never> = {
+const editAccessRequired = (text: Refusals): ActionResult<never> => ({
   ok: false,
-  error: "Your account can't make changes yet.",
+  error: text.editAccessRequired,
   signInRequired: true,
-};
-const FIX_FIELDS = "Please fix the highlighted fields.";
+});
 
-// Server Actions are public POST endpoints, so arguments can be anything at runtime.
-const isId = (id: unknown): id is number => Number.isInteger(id) && (id as number) > 0;
-
-function revalidateUsers(id?: number) {
-  revalidatePath("/");
-  revalidatePath("/users");
-  if (id) revalidatePath(`/users/${id}`);
+/** Every page of the site: the directory and profiles are CMS pages at any address, and the
+ *  landing page shows the counts. */
+function revalidateUsers() {
+  revalidatePath("/", "layout");
 }
 
 /** The API's refusals, as the results the forms already show. Anything else is a real error. */
-function fromApiError(err: unknown): ActionResult<never> {
-  if (err instanceof UnauthorizedError) return SIGN_IN_REQUIRED;
-  if (err instanceof ForbiddenError) return EDIT_ACCESS_REQUIRED;
+function fromApiError(err: unknown, text: Refusals): ActionResult<never> {
+  if (err instanceof UnauthorizedError) return signInRequired(text);
+  if (err instanceof ForbiddenError) return editAccessRequired(text);
   if (err instanceof DuplicateEmailError) {
     return {
       ok: false,
-      error: "That email is already in use.",
-      fieldErrors: { email: ["Another user already has this email"] },
+      error: text.emailTaken,
+      fieldErrors: { email: [text.emailTakenField] },
     };
   }
   if (err instanceof ValidationError) {
-    return { ok: false, error: FIX_FIELDS, fieldErrors: err.fieldErrors };
+    return { ok: false, error: text.fixFields, fieldErrors: err.fieldErrors };
   }
   throw err;
 }
 
-/** Why this person can't write, or null when they can. (The API checks again.) */
-async function refusal(): Promise<ActionResult<never> | null> {
+/**
+ * Runs a write with an editor's access token and revalidates the pages, or says why this person
+ * can't write. The API checks the token and the groups again.
+ */
+async function asEditor<T>(
+  text: Refusals,
+  write: (token: string) => Promise<ActionResult<T>>,
+): Promise<ActionResult<T>> {
   const user = await currentUser();
-  if (!user) return SIGN_IN_REQUIRED;
-  return user.canEdit ? null : EDIT_ACCESS_REQUIRED;
+  if (!user) return signInRequired(text);
+  if (!user.canEdit) return editAccessRequired(text);
+  const token = await accessToken();
+  if (!token) return signInRequired(text);
+  try {
+    return await write(token);
+  } catch (err) {
+    return fromApiError(err, text);
+  }
 }
 
 // Signed-out visitors may try the forms: their input is validated exactly like a signed-in
 // user's, and only the write itself is refused, so the demo shows every check. The API
 // validates again with the same rules.
 async function save(id: number | null, input: unknown): Promise<ActionResult<User>> {
-  const parsed = userSchema.safeParse(input);
+  const [options, text] = await Promise.all([getUserOptions(), refusals()]);
+  const parsed = userSchema(options).safeParse(input);
   if (!parsed.success) {
-    return { ok: false, error: FIX_FIELDS, fieldErrors: z.flattenError(parsed.error).fieldErrors };
+    return {
+      ok: false,
+      error: text.fixFields,
+      fieldErrors: z.flattenError(parsed.error).fieldErrors,
+    };
   }
-  const refused = await refusal();
-  if (refused) return refused;
-  const token = await accessToken();
-  if (!token) return SIGN_IN_REQUIRED;
-
-  try {
+  return asEditor(text, async (token) => {
     const user =
       id === null ? await createUser(parsed.data, token) : await updateUser(id, parsed.data, token);
-    if (!user) return NOT_FOUND;
-    revalidateUsers(user.id);
+    if (!user) return notFound(text);
+    revalidateUsers();
     return { ok: true, data: user };
-  } catch (err) {
-    return fromApiError(err);
-  }
+  });
 }
 
-export async function createUserAction(input: unknown) {
+export async function createUserAction(input: unknown): Promise<ActionResult<User>> {
   return save(null, input);
 }
 
 export async function updateUserAction(id: number, input: unknown): Promise<ActionResult<User>> {
-  if (!isId(id)) return NOT_FOUND;
+  if (!isId(id)) return notFound(await refusals());
   return save(id, input);
 }
 
 export async function deleteUserAction(id: number): Promise<ActionResult<null>> {
-  if (!isId(id)) return NOT_FOUND;
-  const refused = await refusal();
-  if (refused) return refused;
-  const token = await accessToken();
-  if (!token) return SIGN_IN_REQUIRED;
-  try {
+  const text = await refusals();
+  if (!isId(id)) return notFound(text);
+  return asEditor(text, async (token) => {
     await deleteUser(id, token);
-  } catch (err) {
-    return fromApiError(err);
-  }
-  revalidateUsers(id);
-  return { ok: true, data: null };
+    revalidateUsers();
+    return { ok: true, data: null };
+  });
 }

@@ -2,10 +2,12 @@ import clsx from "clsx";
 import { ArrowDown, ArrowUp, ChevronsUpDown } from "lucide-react";
 import Link from "next/link";
 import { Avatar, Highlight } from "@thebensage-dev/ui";
+import { useUserOptions } from "@/hooks/useUserOptions";
 import { parseSortValue, type SortColumn, type SortValue } from "@/lib/listQuery";
 import type { User } from "@/types";
 import CountryLabel from "./CountryLabel";
 import InterestTags from "./InterestTags";
+import { useListText, useProfileHref } from "./DirectoryText";
 import UserRowActions, { type UserActionHandlers } from "./UserRowActions";
 
 type SortProps = { sort?: SortValue | null; onSortChange?: (sort: SortValue) => void };
@@ -17,6 +19,9 @@ export default function UserTable({
   onSortChange,
   ...actions
 }: UserActionHandlers & SortProps & { users: User[]; terms?: string[] }) {
+  const { countryName } = useUserOptions();
+  const { results: text } = useListText();
+  const profileHref = useProfileHref();
   const header = (label: string, column: SortColumn) => (
     <SortableHeader label={label} column={column} sort={sort} onSortChange={onSortChange} />
   );
@@ -26,12 +31,12 @@ export default function UserTable({
       <table className="w-full min-w-[720px] text-left text-sm">
         <thead className="eyebrow border-b border-border bg-surface-muted/50">
           <tr>
-            {header("Name", "name")}
-            {header("Age", "age")}
-            {header("Country", "country")}
-            <th className="px-4 py-3 font-medium">Interests</th>
+            {header(text.name, "name")}
+            {header(text.age, "age")}
+            {header(text.country, "country")}
+            <th className="px-4 py-3 font-medium">{text.interests}</th>
             <th className="px-4 py-3">
-              <span className="sr-only">Actions</span>
+              <span className="sr-only">{text.actions}</span>
             </th>
           </tr>
         </thead>
@@ -40,7 +45,7 @@ export default function UserTable({
             <tr key={user.id} className="transition hover:bg-surface-muted/50">
               <td className="px-4 py-3">
                 <Link
-                  href={`/users/${user.id}`}
+                  href={profileHref(user.id)}
                   className="group flex items-center gap-3 rounded-md"
                 >
                   <Avatar name={user.fullName} size="sm" />
@@ -56,10 +61,10 @@ export default function UserTable({
               </td>
               <td className="px-4 py-3 text-foreground-muted tabular-nums">{user.age}</td>
               <td className="px-4 py-3 text-foreground-muted">
-                <CountryLabel code={user.country} />
+                <CountryLabel code={user.country} name={countryName(user.country)} />
               </td>
               <td className="px-4 py-3">
-                <InterestTags interests={user.interests} terms={terms} />
+                <InterestTags interests={user.interests} terms={terms} label={text.interests} />
               </td>
               <td className="px-4 py-3">
                 <UserRowActions user={user} {...actions} className="justify-end" />

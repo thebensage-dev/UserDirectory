@@ -1,11 +1,12 @@
 import "server-only";
 import { cache } from "react";
-import { createApiClient, type Person } from "@thebensage-dev/api-client";
+import { createApiClient, type User as ApiUser } from "@thebensage-dev/api-client";
 import type { ListQuery } from "@/lib/listQuery";
+import type { UserOptions } from "@/lib/userOptions";
 import type { UserInput } from "@/lib/userSchema";
 import type { DirectorySummary, User, UserPage } from "@/types";
 
-// Every read and write goes to the People API (the Api repo: ASP.NET Core + PostgreSQL), which
+// Every read and write goes to the API (the Api repo: ASP.NET Core + PostgreSQL), which
 // owns the data. Search, filters, sort and paging run there, in SQL. The typed client comes from
 // @thebensage-dev/api-client, generated from the API's OpenAPI document. Reads are public; writes
 // send the signed-in person's authentik access token (the client adds it only to those calls).
@@ -74,29 +75,36 @@ function required<T>(result: { data?: T; error?: unknown; response: Response }, 
 }
 
 // The API sends offsets (+00:00); the app uses the ISO "Z" form everywhere.
-const toUser = (p: Person): User => ({
+const toUser = (p: ApiUser): User => ({
   ...p,
   createdAt: new Date(p.createdAt).toISOString(),
   updatedAt: new Date(p.updatedAt).toISOString(),
 });
 
-// PostgreSQL integer ids: anything outside this range can't exist, so don't ask.
+// PostgreSQL integer ids: anything outside this range can't exist, so don't ask. Takes unknown:
+// Server Actions are public endpoints, so their arguments can be anything at runtime.
 const MAX_ID = 2_147_483_647;
-const isId = (id: number) => Number.isInteger(id) && id > 0 && id <= MAX_ID;
+export const isId = (id: unknown): id is number =>
+  Number.isInteger(id) && (id as number) > 0 && (id as number) <= MAX_ID;
 
 // cache() lets a page and its generateMetadata share one request.
 export const getUser = cache(async (id: number): Promise<User | null> => {
   if (!isId(id)) return null;
-  const person = unwrap(
-    await api().GET("/people/{id}", { params: { path: { id } } }),
-    `GET /people/${id}`,
+  const user = unwrap(
+    await api().GET("/users/{id}", { params: { path: { id } } }),
+    `GET /users/${id}`,
   );
-  return person && toUser(person);
+  return user && toUser(user);
 });
+
+/** The allowed countries, interests, age ranges and sorts. cache(): one request per page. */
+export const getUserOptions = cache(async (): Promise<UserOptions> =>
+  required(await api().GET("/users/options"), "GET /users/options"),
+);
 
 export async function queryUsers(query: ListQuery): Promise<UserPage> {
   const page = required(
-    await api().GET("/people", {
+    await api().GET("/users", {
       params: {
         query: {
           q: query.q || undefined,
@@ -109,42 +117,42 @@ export async function queryUsers(query: ListQuery): Promise<UserPage> {
         },
       },
     }),
-    "GET /people",
+    "GET /users",
   );
   return { ...page, items: page.items.map(toUser) };
 }
 
 export async function getDirectorySummary(): Promise<DirectorySummary> {
-  const s = required(await api().GET("/people/summary"), "GET /people/summary");
+  const s = required(await api().GET("/users/summary"), "GET /users/summary");
   return {
-    people: s.people,
+    users: s.users,
     averageAge: Math.round(s.averageAge),
-    countries: s.countries.map(({ code, people }) => [code, people]),
-    interests: s.interests.map(({ name, people }) => [name, people]),
+    countries: s.countries.map(({ code, users }) => [code, users]),
+    interests: s.interests.map(({ name, users }) => [name, users]),
   };
 }
 
 export async function createUser(input: UserInput, token: string): Promise<User> {
-  return toUser(required(await api(token).POST("/people", { body: input }), "POST /people"));
+  return toUser(required(await api(token).POST("/users", { body: input }), "POST /users"));
 }
 
-/** null when the person no longer exists. */
+/** null when the user no longer exists. */
 export async function updateUser(
   id: number,
   input: UserInput,
   token: string,
 ): Promise<User | null> {
   if (!isId(id)) return null;
-  const person = unwrap(
-    await api(token).PUT("/people/{id}", { params: { path: { id } }, body: input }),
-    `PUT /people/${id}`,
+  const user = unwrap(
+    await api(token).PUT("/users/{id}", { params: { path: { id } }, body: input }),
+    `PUT /users/${id}`,
   );
-  return person && toUser(person);
+  return user && toUser(user);
 }
 
-/** false when the person no longer exists. */
+/** false when the user no longer exists. */
 export async function deleteUser(id: number, token: string): Promise<boolean> {
   if (!isId(id)) return false;
-  const result = await api(token).DELETE("/people/{id}", { params: { path: { id } } });
-  return unwrap(result, `DELETE /people/${id}`) !== null;
+  const result = await api(token).DELETE("/users/{id}", { params: { path: { id } } });
+  return unwrap(result, `DELETE /users/${id}`) !== null;
 }

@@ -1,12 +1,9 @@
-import type { Person, PersonPage } from "@thebensage-dev/api-client";
+// Users and pages come straight from the API's generated types (@thebensage-dev/api-client).
+export type { User, UserPage } from "@thebensage-dev/api-client";
 
-// People and pages come straight from the People API's generated types (@thebensage-dev/api-client).
-export type User = Person;
-export type UserPage = PersonPage;
-
-/** The API's summary, reshaped for the filter menu and stats: [code or name, people] pairs. */
+/** The API's summary, reshaped for the filter menu and stats: [code or name, users] pairs. */
 export type DirectorySummary = {
-  people: number;
+  users: number;
   averageAge: number;
   countries: [string, number][];
   interests: [string, number][];

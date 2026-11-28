@@ -1,28 +1,19 @@
-export const INTERESTS = [
-  "Art",
-  "Books",
-  "Coding",
-  "Cooking",
-  "Fashion",
-  "Fitness",
-  "Gaming",
-  "Gardening",
-  "Hiking",
-  "Movies",
-  "Music",
-  "Photography",
-  "Science",
-  "Sports",
-  "Travel",
-  "Volunteering",
-] as const;
+import type { UserOptions as ApiUserOptions } from "@thebensage-dev/api-client";
 
-export const MAX_INTERESTS = 5;
+/**
+ * The allowed countries (code and name), interests, age ranges and sorts, from the API
+ * (`GET /users/options`). The server reads them once per request and passes them on, so the
+ * form, filters and server agree with the API and server and browser render identical names.
+ */
+export type UserOptions = ApiUserOptions;
 
-export const AGE_RANGES = [
-  { value: "18-24", label: "18–24", min: 18, max: 24 },
-  { value: "25-34", label: "25–34", min: 25, max: 34 },
-  { value: "35-44", label: "35–44", min: 35, max: 44 },
-  { value: "45-54", label: "45–54", min: 45, max: 54 },
-  { value: "55+", label: "55+", min: 55, max: Infinity },
-] as const;
+export type AgeRange = UserOptions["ageRanges"][number];
+
+export const ageRangeLabel = ({ min, max }: AgeRange) =>
+  max === null ? `${min}+` : `${min}–${max}`;
+
+/** Looks up a country's name by its code; an unknown code shows as itself. */
+export function countryNames({ countries }: Pick<UserOptions, "countries">) {
+  const names = new Map(countries.map(({ code, name }) => [code, name]));
+  return (code: string) => names.get(code) ?? code;
+}
