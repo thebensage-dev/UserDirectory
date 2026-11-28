@@ -22,7 +22,7 @@
     "@payloadcms/live-preview-react": "3.94.2",
     "@thebensage-dev/api-client": "^0.2.0",
     "@thebensage-dev/auth": "^0.1.0",
-    "@thebensage-dev/cms-client": "^0.2.0",
+    "@thebensage-dev/cms-client": "^0.3.0",
     "@thebensage-dev/ui": "^1.4.0",
     "clsx": "^2.1.1",
     "lucide-react": "^1.77.0",
